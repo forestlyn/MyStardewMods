@@ -1,0 +1,10 @@
+﻿{
+  "Name": "BetterFarmComputer",
+  "Author": "forestlyn",
+  "Version": "1.0.0",
+  "Description": "A better Farm Computer!",
+  "UniqueID": "forestlyn.BetterFarmComputer",
+  "EntryDll": "BetterFarmComputer.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": []
+}
