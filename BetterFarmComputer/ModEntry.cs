@@ -34,10 +34,19 @@ namespace BetterFarmComputer
         {
             if (Context.IsWorldReady)
             {
-                if (Game1.getLocationFromName(locationName) != null)
+                return GetLocationTerrainFeature(Game1.getLocationFromName(locationName));
+            }
+            return null;
+        }
+
+        private List<TerrainFeature>? GetLocationTerrainFeature(GameLocation location)
+        {
+            if (Context.IsWorldReady)
+            {
+                if (location != null)
                 {
                     List<TerrainFeature> terrainFeatureList = new List<TerrainFeature>();
-                    NetVector2Dictionary<TerrainFeature, NetRef<TerrainFeature>> temp = Game1.getLocationFromName(locationName).terrainFeatures;
+                    NetVector2Dictionary<TerrainFeature, NetRef<TerrainFeature>> temp = location.terrainFeatures;
                     foreach (var terrainFeature in temp)
                     {
                         foreach (var terrain in terrainFeature)
@@ -55,10 +64,18 @@ namespace BetterFarmComputer
         {
             if (Context.IsWorldReady)
             {
-                if (Game1.getLocationFromName(locationName) != null)
+                return GetLocationBuildingList(Game1.getLocationFromName(locationName));
+            }
+            return null;
+        }
+        private List<Building>? GetLocationBuildingList(GameLocation location)
+        {
+            if (Context.IsWorldReady)
+            {
+                if (location != null)
                 {
                     List<Building> buildingList = new List<Building>();
-                    NetCollection<Building> temp = Game1.getLocationFromName(locationName).buildings;
+                    NetCollection<Building> temp = location.buildings;
                     foreach (var building in temp)
                     {
                         buildingList.Add(building);
@@ -73,10 +90,18 @@ namespace BetterFarmComputer
         {
             if (Context.IsWorldReady)
             {
-                if (Game1.getLocationFromName(locationName) != null)
+                return GetLocationObjectList(Game1.getLocationFromName(locationName));
+            }
+            return null;
+        }
+        private List<Object>? GetLocationObjectList(GameLocation location)
+        {
+            if (Context.IsWorldReady)
+            {
+                if (location != null)
                 {
                     List<Object> objectList = new List<Object>();
-                    OverlaidDictionary temp = Game1.getLocationFromName(locationName).objects;
+                    OverlaidDictionary temp = location.objects;
                     foreach (var obj in temp.Values)
                     {
                         objectList.Add(obj);
@@ -86,7 +111,6 @@ namespace BetterFarmComputer
             }
             return null;
         }
-
         //private void OnDisplayMenuChanged(object? sender, MenuChangedEventArgs e)
         //{
         //    if (e.NewMenu != null)
@@ -121,7 +145,7 @@ namespace BetterFarmComputer
             Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("Farm"), out int hoeDirtCount_Farm, out int cropCount_Farm, out int readyForHarvestCount_Farm, out int needsWateringCount_Farm);
             Analyse.AnalyseBuildingList(GetLocationBuildingList("Farm"), out var buildingStruct_Farm);
             Analyse.GetPiecesOfHay(out int hayCount);
-            Analyse.AnalyseObjectsList(GetLocationObjectList("Farm"), out AnalyseObjectStruct truffleCount_Farm);
+            Analyse.AnalyseObjectsList(GetLocationObjectList("Farm"), out AnalyseObjectStruct objStruct_Farm);
             var farmlist = new List<string>
             {
                 $"{Game1.player.Name}的农场报告:",
@@ -131,11 +155,7 @@ namespace BetterFarmComputer
                 $"可收成农作物:{readyForHarvestCount_Farm}",
                 $"未浇水农作物:{needsWateringCount_Farm}",
                 $"开耕土壤:{hoeDirtCount_Farm - cropCount_Farm}",
-                $"松露数量:{truffleCount_Farm.truffleCount}",
-                $"重型树液采集器:{truffleCount_Farm.heavyTapperCount}",
-                $"可收成重型树液采集器:{truffleCount_Farm.heavyTapperReadyForHarvestCount}",
-                $"树液采集器数量:{truffleCount_Farm.tapperCount}",
-                $"可收成树液采集器:{truffleCount_Farm.tapperReadyForHarvestCount}",
+                $"松露数量:{objStruct_Farm.truffleCount}",
             };
             strs.Add(farmlist);
 
@@ -165,6 +185,41 @@ namespace BetterFarmComputer
                 $"开耕土壤:{hoeDirtCount_IslandWest - cropCount_IslandWest}"
             };
             strs.Add(islandWestList);
+
+
+            //ALL
+            IList<GameLocation> locations = Game1.locations;
+            AnalyseBuildingStruct buildingStruct_ALL = new AnalyseBuildingStruct();
+            AnalyseObjectStruct objsStruct_ALL = new AnalyseObjectStruct();
+
+            foreach (GameLocation location in locations)
+            {
+                if (location != null)
+                {
+                    Analyse.AnalyseObjectsList(GetLocationObjectList(location), out var tempobj);
+                    Analyse.AnalyseBuildingList(GetLocationBuildingList(location), out var tempbuilds);
+                    objsStruct_ALL += tempobj;
+                    buildingStruct_ALL += tempbuilds;
+                }
+            }
+
+
+            var allList = new List<string>
+            {
+                $"{Game1.player.Name}的其它报告:",
+                $"--------------",
+                $"重型树液采集器:{objsStruct_ALL.heavyTapperCount}",
+                $"可收成重型树液采集器:{objsStruct_ALL.heavyTapperReadyForHarvestCount}",
+                $"树液采集器数量:{objsStruct_ALL.tapperCount}",
+                $"可收成树液采集器:{objsStruct_ALL.tapperReadyForHarvestCount}",
+                $"小桶数量:{buildingStruct_ALL.kegCount+objsStruct_ALL.kegCount}",
+                $"可收获小桶:{buildingStruct_ALL.kegReadyForHarvestCount+objsStruct_ALL.kegReadyForHarvestCount}",
+                $"空闲小桶:{buildingStruct_ALL.kegIsEmpty + objsStruct_ALL.kegIsEmpty}",
+                $"蜂房:{buildingStruct_ALL.beeHouseCount+objsStruct_ALL.beeHouseCount}",
+                $"可收获蜂房:{buildingStruct_ALL.beeHouseReadyForHarvestCount + objsStruct_ALL.beeHouseReadyForHarvestCount}",
+            };
+            strs.Add(allList);
+
 
             //MyLog.Log($"{Game1.player.Name} {hoeDirtCount_Farm} {cropCount_Farm} {readyForHarvestCount_Farm} {needsWateringCount_Farm}", LogLevel.Debug);
             //MyLog.Log($"{str.Count}", LogLevel.Debug);

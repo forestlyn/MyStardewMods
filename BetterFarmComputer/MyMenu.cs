@@ -21,7 +21,7 @@ namespace BetterFarmComputer
     internal class MyMenu : IClickableMenu
     {
         private SpriteFont font = Game1.dialogueFont;
-        private List<List<String>>? contentList;
+        private List<List<string>>? contentList;
 
         public MyMenu()
         {

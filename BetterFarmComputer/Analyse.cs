@@ -2,6 +2,7 @@
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
+using StardewValley.Network;
 using StardewValley.TerrainFeatures;
 using Object = StardewValley.Object;
 
@@ -14,6 +15,7 @@ namespace BetterFarmComputer
         private const string HeavyTapperItemID = "264";
         private const string TapperItemID = "105";
         private const string KegItemID = "12";
+        private const string BeeHouseItemID = "10";
 
 
 
@@ -34,6 +36,22 @@ namespace BetterFarmComputer
         {
             analyseBuildingStruct = new AnalyseBuildingStruct();
             analyseBuildingStruct.hayCapacity = building.hayCapacity.Value;
+            //OverlaidDictionary? objs = building.GetIndoors()?.objects;
+            OverlaidDictionary? objs = building.indoors.Value?.objects;
+            if (objs != null)
+            {
+                List<Object> objslist = new List<Object>();
+                foreach(var obj in objs.Values)
+                {
+                    objslist.Add(obj);
+                }
+                AnalyseObjectsList(objslist, out var analyseObjectStruct);
+                analyseBuildingStruct.kegCount = analyseObjectStruct.kegCount;
+                analyseBuildingStruct.kegIsEmpty = analyseObjectStruct.kegIsEmpty;
+                analyseBuildingStruct.kegReadyForHarvestCount = analyseObjectStruct.kegReadyForHarvestCount;
+                analyseBuildingStruct.beeHouseCount = analyseObjectStruct.beeHouseCount;
+                analyseBuildingStruct.beeHouseReadyForHarvestCount = analyseObjectStruct.beeHouseReadyForHarvestCount;
+            }
         }
 
         public void AnalyseBuildingList(List<Building>? buildings, out AnalyseBuildingStruct analyseBuildingStruct)
@@ -45,13 +63,13 @@ namespace BetterFarmComputer
             }
             foreach (Building building in buildings)
             {
-                AnalyseBuilding(building, out var hayCapacity);
-                analyseBuildingStruct.hayCapacity += hayCapacity.hayCapacity;
+                AnalyseBuilding(building, out var buildingStruct);
+                analyseBuildingStruct += buildingStruct;
             }
         }
 
 
-        private void AnalyseObjects(StardewValley.Object obj, out AnalyseObjectStruct analyseObjectStruct)
+        private void AnalyseObjects(Object obj, out AnalyseObjectStruct analyseObjectStruct)
         {
             analyseObjectStruct = new AnalyseObjectStruct();
             if (obj != null && obj.itemId != null && obj.itemId.Value == TruffleItemID)
@@ -67,6 +85,17 @@ namespace BetterFarmComputer
             {
                 analyseObjectStruct.tapperCount = 1;
                 analyseObjectStruct.tapperReadyForHarvestCount = obj.readyForHarvest.Value ? 1 : 0;
+            }
+            else if (obj != null && obj.itemId != null && obj.itemId.Value == KegItemID)
+            {
+                analyseObjectStruct.kegCount = 1;
+                analyseObjectStruct.kegReadyForHarvestCount = obj.readyForHarvest.Value ? 1 : 0;
+                analyseObjectStruct.kegIsEmpty = (obj.minutesUntilReady.Value == 0 && obj.readyForHarvest.Value == false) ? 1 : 0;
+            }
+            else if (obj != null && obj.itemId != null && obj.itemId.Value == BeeHouseItemID)
+            {
+                analyseObjectStruct.beeHouseCount = 1;
+                analyseObjectStruct.beeHouseReadyForHarvestCount = obj.readyForHarvest.Value ? 1 : 0;
             }
         }
 
