@@ -1,81 +1,82 @@
-﻿namespace BetterFarmComputer
+﻿using BetterFarmComputer.Struct;
+using StardewModdingAPI;
+
+namespace BetterFarmComputer
 {
-    internal struct AnalyseBuildingStruct
+    public struct AnalyseBuildingStruct
     {
+        Dictionary<BuildingStructType,BuildingStruct> buildingStructs;
+
+        public AnalyseObjectStruct analyseObjectStruct;
         public AnalyseBuildingStruct()
         {
-            hayCapacity = 0;
-            kegCount = 0;
-            kegIsEmpty = 0;
-            kegReadyForHarvestCount = 0;
-            beeHouseCount = 0;
-            beeHouseReadyForHarvestCount = 0;
+            analyseObjectStruct = new AnalyseObjectStruct();
+            buildingStructs = new Dictionary<BuildingStructType, BuildingStruct>();
         }
-        public int hayCapacity;
-        public int kegCount;
-        public int kegReadyForHarvestCount;
-        public int kegIsEmpty;
-        //蜂房
-        public int beeHouseCount;
-        public int beeHouseReadyForHarvestCount;
-        public static AnalyseBuildingStruct operator +(AnalyseBuildingStruct p1, AnalyseBuildingStruct p2)
+
+
+        public void Add(BuildingStructType type, BuildingStruct buildingStruct)
         {
-            AnalyseBuildingStruct res = new AnalyseBuildingStruct();
-            res.hayCapacity = p1.hayCapacity + p2.hayCapacity;
-            res.kegCount = p1.kegCount + p2.kegCount;
-            res.kegReadyForHarvestCount = p1.kegReadyForHarvestCount + p2.kegReadyForHarvestCount;
-            res.kegIsEmpty = p1.kegIsEmpty + p2.kegIsEmpty;
-            res.beeHouseCount = p1.beeHouseCount + p2.beeHouseCount;
-            res.beeHouseReadyForHarvestCount = p1.beeHouseReadyForHarvestCount + p2.beeHouseReadyForHarvestCount;
-            return res;
+            if (!buildingStructs.ContainsKey(type))
+                buildingStructs.Add(type, buildingStruct);
+            else
+            {
+                buildingStructs[type] += buildingStruct;
+            }
+        }
+
+        internal BuildingStruct GetType(BuildingStructType type)
+        {
+            if(!buildingStructs.ContainsKey(type))
+                return new BuildingStruct(type); 
+            return buildingStructs[type];
+        }
+
+        internal void Add(AnalyseBuildingStruct tempbuilds)
+        {
+            foreach(var build in tempbuilds.buildingStructs)
+            {
+                Add(build.Key, build.Value);
+            }
+            analyseObjectStruct.Add(tempbuilds.analyseObjectStruct);
         }
     }
 
-    internal struct AnalyseObjectStruct
+    public struct AnalyseObjectStruct
     {
+        public Dictionary<ObjectStructType, ObjectStruct> objectStructs;
         public AnalyseObjectStruct()
         {
-            truffleCount = 0;
-            heavyTapperCount = 0;
-            heavyTapperReadyForHarvestCount = 0;
-            tapperCount = 0;
-            tapperReadyForHarvestCount = 0;
-            kegCount = 0;
-            kegIsEmpty = 0;
-            kegReadyForHarvestCount = 0;
-            beeHouseCount = 0;
-            beeHouseReadyForHarvestCount = 0;
+            objectStructs = new Dictionary<ObjectStructType, ObjectStruct>();
         }
-        // 松露
-        public int truffleCount;
-        // 树液采集器
-        public int heavyTapperCount;
-        public int heavyTapperReadyForHarvestCount;
-        public int tapperCount;
-        public int tapperReadyForHarvestCount;
-        //小桶
-        public int kegCount;
-        public int kegReadyForHarvestCount;
-        public int kegIsEmpty;
-        //蜂房
-        public int beeHouseCount;
-        public int beeHouseReadyForHarvestCount;
 
 
-        public static AnalyseObjectStruct operator +(AnalyseObjectStruct p1, AnalyseObjectStruct p2)
+        public void Add(ObjectStructType type, ObjectStruct objectStruct)
         {
-            var res = new AnalyseObjectStruct();
-            res.truffleCount = p1.truffleCount + p2.truffleCount;
-            res.heavyTapperCount = p1.heavyTapperCount + p2.heavyTapperCount;
-            res.heavyTapperReadyForHarvestCount = p1.heavyTapperReadyForHarvestCount + p2.heavyTapperReadyForHarvestCount;
-            res.tapperCount = p1.tapperCount + p2.tapperCount;
-            res.tapperReadyForHarvestCount = p1.tapperReadyForHarvestCount + p2.tapperReadyForHarvestCount;
-            res.kegCount = p1.kegCount + p2.kegCount;
-            res.kegReadyForHarvestCount = p1.kegReadyForHarvestCount + p2.kegReadyForHarvestCount;
-            res.kegIsEmpty = p1.kegIsEmpty + p2.kegIsEmpty;
-            res.beeHouseCount = p1.beeHouseCount + p2.beeHouseCount;
-            res.beeHouseReadyForHarvestCount = p1.beeHouseReadyForHarvestCount + p2.beeHouseReadyForHarvestCount;
-            return res;
+            if (!objectStructs.ContainsKey(type))
+                objectStructs.Add(type, objectStruct);
+            else
+            {
+                objectStructs[type] += objectStruct;
+            }
+        }
+
+        public void Add(AnalyseObjectStruct analyseObjectStruct)
+        {
+            foreach (var obj in analyseObjectStruct.objectStructs)
+            {
+                Add(obj.Key, obj.Value);
+            }
+        }
+
+        public ObjectStruct GetType(ObjectStructType type)
+        {
+            if (!objectStructs.ContainsKey(type))
+            {
+                //MyLog.Log(type.ToString() + " not found", LogLevel.Error);
+                return new ObjectStruct(type);
+            }
+            return objectStructs[type];
         }
     }
 }

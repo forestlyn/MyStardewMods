@@ -1,4 +1,6 @@
-﻿using Netcode;
+﻿using BetterFarmComputer.Struct;
+using GenericModConfigMenu;
+using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -10,11 +12,13 @@ using Object = StardewValley.Object;
 namespace BetterFarmComputer
 {
     /// <summary>The mod entry point.</summary>
-    internal sealed class ModEntry : Mod
+    public sealed class ModEntry : Mod
     {
 
         private Analyse analyse = new Analyse();
         public Analyse Analyse { get { return analyse; } }
+
+        public ModConfig Config { get; private set; }
 
         /*********
         ** Public methods
@@ -24,11 +28,115 @@ namespace BetterFarmComputer
         public override void Entry(IModHelper helper)
         {
             //helper.Events.Display.MenuChanged += this.OnDisplayMenuChanged;
+
+            this.Config = this.Helper.ReadConfig<ModConfig>();
+
             helper.Events.Input.ButtonPressed += this.OnButtonPressed;
+            helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
             MyLog.Monitor = this.Monitor;
         }
 
+        private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
+        {
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is null)
+            {
+                //MyLog.Log("Can't find the Generic Mod Config Menu API. Make sure it's installed.", LogLevel.Error);
+                return;
+            }
 
+
+            // register mod
+            configMenu.Register(
+                mod: this.ModManifest,
+                reset: () => this.Config = new ModConfig(),
+                save: () => this.Helper.WriteConfig(this.Config)
+            );
+
+            // add some config options
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => "显示农场信息",
+                tooltip: () => "显示农场信息",
+                getValue: () => this.Config.ShowFarm,
+                setValue: value => this.Config.ShowFarm = value
+            );
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => "显示温室信息",
+                tooltip: () => "显示温室信息",
+                getValue: () => this.Config.ShowGreenHouse,
+                setValue: value => this.Config.ShowGreenHouse = value
+            );
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => "显示姜岛信息",
+                tooltip: () => "显示姜岛信息",
+                getValue: () => this.Config.ShowIslandWest,
+                setValue: value => this.Config.ShowIslandWest = value
+            );
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => "显示其它信息",
+                tooltip: () => "显示其它信息",
+                getValue: () => this.Config.ShowOther,
+                setValue: value => this.Config.ShowOther = value
+            );
+
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => "显示树液采集器",
+                tooltip: () => "显示树液采集器",
+                getValue: () => this.Config.ShowTapper,
+                setValue: value => this.Config.ShowTapper = value
+            );
+
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => "显示小桶",
+                tooltip: () => "显示小桶",
+                getValue: () => this.Config.ShowKeg,
+                setValue: value => this.Config.ShowKeg = value
+            );
+
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => "显示蜂房",
+                tooltip: () => "显示蜂房",
+                getValue: () => this.Config.ShowBeeHouse,
+                setValue: value => this.Config.ShowBeeHouse = value
+            );
+
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => "显示地窖木桶",
+                tooltip: () => "显示地窖木桶",
+                getValue: () => this.Config.ShowCask,
+                setValue: value => this.Config.ShowCask = value
+            );
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => "显示罐头瓶",
+                tooltip: () => "显示罐头瓶",
+                getValue: () => this.Config.ShowPreserveJar,
+                setValue: value => this.Config.ShowPreserveJar = value
+            );
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => "显示蘑菇树桩",
+                tooltip: () => "显示蘑菇树桩",
+                getValue: () => this.Config.ShowMushroomLog,
+                setValue: value => this.Config.ShowMushroomLog = value
+            );
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => "显示烘干机",
+                tooltip: () => "显示烘干机",
+                getValue: () => this.Config.ShowDehydrator,
+                setValue: value => this.Config.ShowDehydrator = value
+            );
+        }
 
         private List<TerrainFeature>? GetLocationTerrainFeature(string locationName)
         {
@@ -141,6 +249,9 @@ namespace BetterFarmComputer
         private List<List<string>> GetAnalyseStringLists()
         {
             var strs = new List<List<string>>();
+
+            if (Config != null && !Config.ShowFarm)
+                goto GreenHouse;
             //Farm
             Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("Farm"), out int hoeDirtCount_Farm, out int cropCount_Farm, out int readyForHarvestCount_Farm, out int needsWateringCount_Farm);
             Analyse.AnalyseBuildingList(GetLocationBuildingList("Farm"), out var buildingStruct_Farm);
@@ -150,15 +261,18 @@ namespace BetterFarmComputer
             {
                 $"{Game1.player.Name}的农场报告:",
                 $"--------------",
-                $"干草:{hayCount}/{buildingStruct_Farm.hayCapacity}",
+                $"干草:{hayCount}/{buildingStruct_Farm.GetType(BuildingStructType.Hay).capacity}",
                 $"农作物总量:{cropCount_Farm}",
                 $"可收成农作物:{readyForHarvestCount_Farm}",
                 $"未浇水农作物:{needsWateringCount_Farm}",
                 $"开耕土壤:{hoeDirtCount_Farm - cropCount_Farm}",
-                $"松露数量:{objStruct_Farm.truffleCount}",
+                $"松露数量:{objStruct_Farm.GetType(ObjectStructType.Truffle).count}",
             };
             strs.Add(farmlist);
 
+        GreenHouse:
+            if (Config!=null&& !Config.ShowGreenHouse)
+                goto IslandWest;
             //Greenhouse
             Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("GreenHouse"), out int hoeDirtCount_GreenHouse, out int cropCount_GreenHouse, out int readyForHarvestCount_GreenHouse, out int needsWateringCount_GreenHouse);
             var greenhouseList = new List<string>
@@ -172,7 +286,9 @@ namespace BetterFarmComputer
             };
             strs.Add(greenhouseList);
 
-
+        IslandWest:
+            if (Config != null && !Config.ShowIslandWest)
+                goto Other;
             //IslandWest
             Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("IslandWest"), out int hoeDirtCount_IslandWest, out int cropCount_IslandWest, out int readyForHarvestCount_IslandWest, out int needsWateringCount_IslandWest);
             var islandWestList = new List<string>
@@ -186,11 +302,15 @@ namespace BetterFarmComputer
             };
             strs.Add(islandWestList);
 
-
+        Other:
+            if (Config != null && !Config.ShowOther)
+                goto End;
             //ALL
             IList<GameLocation> locations = Game1.locations;
             AnalyseBuildingStruct buildingStruct_ALL = new AnalyseBuildingStruct();
             AnalyseObjectStruct objsStruct_ALL = new AnalyseObjectStruct();
+
+            Analyse.AnalyseObjectsList(GetLocationObjectList("Cellar"), out var objs_Cellar);
 
             foreach (GameLocation location in locations)
             {
@@ -198,8 +318,8 @@ namespace BetterFarmComputer
                 {
                     Analyse.AnalyseObjectsList(GetLocationObjectList(location), out var tempobj);
                     Analyse.AnalyseBuildingList(GetLocationBuildingList(location), out var tempbuilds);
-                    objsStruct_ALL += tempobj;
-                    buildingStruct_ALL += tempbuilds;
+                    objsStruct_ALL.Add(tempobj);
+                    buildingStruct_ALL.Add(tempbuilds);
                 }
             }
 
@@ -208,19 +328,63 @@ namespace BetterFarmComputer
             {
                 $"{Game1.player.Name}的其它报告:",
                 $"--------------",
-                $"重型树液采集器:{objsStruct_ALL.heavyTapperCount}",
-                $"可收成重型树液采集器:{objsStruct_ALL.heavyTapperReadyForHarvestCount}",
-                $"树液采集器数量:{objsStruct_ALL.tapperCount}",
-                $"可收成树液采集器:{objsStruct_ALL.tapperReadyForHarvestCount}",
-                $"小桶数量:{buildingStruct_ALL.kegCount+objsStruct_ALL.kegCount}",
-                $"可收获小桶:{buildingStruct_ALL.kegReadyForHarvestCount+objsStruct_ALL.kegReadyForHarvestCount}",
-                $"空闲小桶:{buildingStruct_ALL.kegIsEmpty + objsStruct_ALL.kegIsEmpty}",
-                $"蜂房:{buildingStruct_ALL.beeHouseCount+objsStruct_ALL.beeHouseCount}",
-                $"可收获蜂房:{buildingStruct_ALL.beeHouseReadyForHarvestCount + objsStruct_ALL.beeHouseReadyForHarvestCount}",
             };
+            if (Config == null || Config.ShowTapper)
+            {
+                var heaveTapper = objsStruct_ALL.GetType(ObjectStructType.HeavyTapper);
+                allList.Add($"重型树液采集器:{heaveTapper.count}");
+                allList.Add($"可收成重型树液采集器:{heaveTapper.readyForHarvestCount}");
+                var tapper = objsStruct_ALL.GetType(ObjectStructType.Tapper);
+                allList.Add($"树液采集器数量:{tapper.count}");
+                allList.Add($"可收成树液采集器:{tapper.readyForHarvestCount}");
+            }
+            if (Config == null || Config.ShowKeg)
+            {
+                var keg = objsStruct_ALL.GetType(ObjectStructType.Keg) +
+                    buildingStruct_ALL.analyseObjectStruct.GetType(ObjectStructType.Keg);
+                allList.Add($"小桶数量:{keg.count}");
+                allList.Add($"可收获小桶:{keg.readyForHarvestCount}");
+                allList.Add($"空闲小桶:{keg.emptyCount}");
+            }
+            if (Config == null || Config.ShowBeeHouse)
+            {
+                var beehouse = objsStruct_ALL.GetType(ObjectStructType.BeeHouse) +
+                    buildingStruct_ALL.analyseObjectStruct.GetType(ObjectStructType.BeeHouse);
+                allList.Add($"蜂房数量:{beehouse.count}");
+                allList.Add($"可收获蜂房:{beehouse.readyForHarvestCount}");
+            }
+            if (Config == null || Config.ShowCask)
+            {
+                var cask = objs_Cellar.GetType(ObjectStructType.Cask);
+                allList.Add($"地窖木桶:{cask.count}");
+                allList.Add($"可收获地窖木桶:{cask.readyForHarvestCount}");
+                allList.Add($"空闲地窖木桶:{cask.emptyCount}");
+            }
+            if (Config == null || Config.ShowPreserveJar)
+            {
+                var preserveJar = objsStruct_ALL.GetType(ObjectStructType.PreserveJar) +
+                    buildingStruct_ALL.analyseObjectStruct.GetType(ObjectStructType.PreserveJar);
+                allList.Add($"罐头瓶:{preserveJar.count}");
+                allList.Add($"可收获罐头瓶:{preserveJar.readyForHarvestCount}");
+                allList.Add($"空闲罐头瓶:{preserveJar.emptyCount}");
+            }
+            if (Config == null || Config.ShowMushroomLog)
+            {
+                var mushroomLog = objsStruct_ALL.GetType(ObjectStructType.MushroomLog);
+                allList.Add($"蘑菇树桩:{mushroomLog.count}");
+                allList.Add($"可收获蘑菇树桩:{mushroomLog.readyForHarvestCount}");
+            }
+            if(Config == null || Config.ShowDehydrator)
+            {
+                var dehydrator = objsStruct_ALL.GetType(ObjectStructType.Dehydrator) +
+                    buildingStruct_ALL.analyseObjectStruct.GetType(ObjectStructType.Dehydrator);
+                allList.Add($"烘干机:{dehydrator.count}");
+                allList.Add($"可收获烘干机:{dehydrator.readyForHarvestCount}");
+                allList.Add($"空闲烘干机:{dehydrator.emptyCount}");
+            }
             strs.Add(allList);
 
-
+        End:
             //MyLog.Log($"{Game1.player.Name} {hoeDirtCount_Farm} {cropCount_Farm} {readyForHarvestCount_Farm} {needsWateringCount_Farm}", LogLevel.Debug);
             //MyLog.Log($"{str.Count}", LogLevel.Debug);
             return strs;

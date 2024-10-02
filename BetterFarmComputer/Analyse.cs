@@ -1,4 +1,5 @@
-﻿using Netcode;
+﻿using BetterFarmComputer.Struct;
+using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
@@ -8,15 +9,53 @@ using Object = StardewValley.Object;
 
 namespace BetterFarmComputer
 {
-    internal class Analyse
+    public class Analyse
     {
-
-        private const string TruffleItemID = "430";
-        private const string HeavyTapperItemID = "264";
-        private const string TapperItemID = "105";
-        private const string KegItemID = "12";
-        private const string BeeHouseItemID = "10";
-
+        public ObjectStructType GetObjectStructType(string itemid, out bool useEmpty, out bool useReadyForHaverst)
+        {
+            switch (itemid)
+            {
+                case ItemId.TruffleItemID:
+                    useEmpty = false;
+                    useReadyForHaverst = false;
+                    return ObjectStructType.Truffle;
+                case ItemId.HeavyTapperItemID:
+                    useEmpty = false;
+                    useReadyForHaverst = true;
+                    return ObjectStructType.HeavyTapper;
+                case ItemId.TapperItemID:
+                    useEmpty = false;
+                    useReadyForHaverst = true;
+                    return ObjectStructType.Tapper;
+                case ItemId.KegItemID:
+                    useEmpty = true;
+                    useReadyForHaverst = true;
+                    return ObjectStructType.Keg;
+                case ItemId.BeeHouseItemID:
+                    useEmpty = false;
+                    useReadyForHaverst = true;
+                    return ObjectStructType.BeeHouse;
+                case ItemId.CaskItemID:
+                    useEmpty = true;
+                    useReadyForHaverst = true;
+                    return ObjectStructType.Cask;
+                case ItemId.PreserveJarItemID:
+                    useEmpty = true;
+                    useReadyForHaverst = true;
+                    return ObjectStructType.PreserveJar;
+                case ItemId.MushroomLogItemID:
+                    useEmpty = false;
+                    useReadyForHaverst = true;
+                    return ObjectStructType.MushroomLog;
+                case ItemId.DehydratorItemID:
+                    useEmpty = true;
+                    useReadyForHaverst = true;
+                    return ObjectStructType.Dehydrator;
+            }
+            useEmpty = false;
+            useReadyForHaverst = false;
+            return ObjectStructType.None;
+        }
 
 
         public void GetPiecesOfHay(out int hayCount)
@@ -32,25 +71,22 @@ namespace BetterFarmComputer
             }
         }
 
-        private void AnalyseBuilding(Building building, out AnalyseBuildingStruct analyseBuildingStruct)
+        private void AnalyseBuilding(Building building, out BuildingStruct buildingStruct, out AnalyseObjectStruct analyseObjectStruct)
         {
-            analyseBuildingStruct = new AnalyseBuildingStruct();
-            analyseBuildingStruct.hayCapacity = building.hayCapacity.Value;
+            buildingStruct = new BuildingStruct(BuildingStructType.Hay);
+            buildingStruct.capacity = building.hayCapacity.Value;
+            analyseObjectStruct = new AnalyseObjectStruct();
             //OverlaidDictionary? objs = building.GetIndoors()?.objects;
             OverlaidDictionary? objs = building.indoors.Value?.objects;
             if (objs != null)
             {
                 List<Object> objslist = new List<Object>();
-                foreach(var obj in objs.Values)
+                foreach (var obj in objs.Values)
                 {
                     objslist.Add(obj);
                 }
-                AnalyseObjectsList(objslist, out var analyseObjectStruct);
-                analyseBuildingStruct.kegCount = analyseObjectStruct.kegCount;
-                analyseBuildingStruct.kegIsEmpty = analyseObjectStruct.kegIsEmpty;
-                analyseBuildingStruct.kegReadyForHarvestCount = analyseObjectStruct.kegReadyForHarvestCount;
-                analyseBuildingStruct.beeHouseCount = analyseObjectStruct.beeHouseCount;
-                analyseBuildingStruct.beeHouseReadyForHarvestCount = analyseObjectStruct.beeHouseReadyForHarvestCount;
+                AnalyseObjectsList(objslist, out var analyseObject);
+                analyseObjectStruct = analyseObject;
             }
         }
 
@@ -63,39 +99,32 @@ namespace BetterFarmComputer
             }
             foreach (Building building in buildings)
             {
-                AnalyseBuilding(building, out var buildingStruct);
-                analyseBuildingStruct += buildingStruct;
+                AnalyseBuilding(building, out var buildingStruct, out var analyseObjectStruct);
+                analyseBuildingStruct.Add(buildingStruct.type, buildingStruct);
+                analyseBuildingStruct.analyseObjectStruct.Add(analyseObjectStruct);
             }
         }
 
 
-        private void AnalyseObjects(Object obj, out AnalyseObjectStruct analyseObjectStruct)
+        private void AnalyseObjects(Object obj, out ObjectStruct objectStruct)
         {
-            analyseObjectStruct = new AnalyseObjectStruct();
-            if (obj != null && obj.itemId != null && obj.itemId.Value == TruffleItemID)
+            objectStruct = new ObjectStruct();
+            if (obj == null || obj.itemId == null)
             {
-                analyseObjectStruct.truffleCount = 1;
+                return;
             }
-            else if (obj != null && obj.itemId != null && obj.itemId.Value == HeavyTapperItemID)
+
+            objectStruct.count = 1;
+            objectStruct.type = GetObjectStructType(obj.itemId.Value, out var useEmpty, out var useReadyForHaverst);
+            objectStruct.useReadyForHarvestCount = useReadyForHaverst;
+            objectStruct.useEmpty = useEmpty;
+            if (useReadyForHaverst)
             {
-                analyseObjectStruct.heavyTapperCount = 1;
-                analyseObjectStruct.heavyTapperReadyForHarvestCount = obj.readyForHarvest.Value ? 1 : 0;
+                objectStruct.readyForHarvestCount = obj.readyForHarvest.Value ? 1 : 0;
             }
-            else if (obj != null && obj.itemId != null && obj.itemId.Value == TapperItemID)
+            if (useEmpty)
             {
-                analyseObjectStruct.tapperCount = 1;
-                analyseObjectStruct.tapperReadyForHarvestCount = obj.readyForHarvest.Value ? 1 : 0;
-            }
-            else if (obj != null && obj.itemId != null && obj.itemId.Value == KegItemID)
-            {
-                analyseObjectStruct.kegCount = 1;
-                analyseObjectStruct.kegReadyForHarvestCount = obj.readyForHarvest.Value ? 1 : 0;
-                analyseObjectStruct.kegIsEmpty = (obj.minutesUntilReady.Value == 0 && obj.readyForHarvest.Value == false) ? 1 : 0;
-            }
-            else if (obj != null && obj.itemId != null && obj.itemId.Value == BeeHouseItemID)
-            {
-                analyseObjectStruct.beeHouseCount = 1;
-                analyseObjectStruct.beeHouseReadyForHarvestCount = obj.readyForHarvest.Value ? 1 : 0;
+                objectStruct.emptyCount = obj.MinutesUntilReady == 0 && obj.readyForHarvest.Value != true ? 1 : 0;
             }
         }
 
@@ -108,8 +137,9 @@ namespace BetterFarmComputer
             }
             foreach (Object obj in objs)
             {
-                AnalyseObjects(obj, out AnalyseObjectStruct objectStruct);
-                analyseObjectStruct += objectStruct;
+                AnalyseObjects(obj, out ObjectStruct objectStruct);
+                if (objectStruct.type != ObjectStructType.None)
+                    analyseObjectStruct.Add(objectStruct.type, objectStruct);
             }
         }
 
