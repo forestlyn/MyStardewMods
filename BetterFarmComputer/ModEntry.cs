@@ -136,6 +136,13 @@ namespace BetterFarmComputer
                 getValue: () => this.Config.ShowDehydrator,
                 setValue: value => this.Config.ShowDehydrator = value
             );
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => "显示果树",
+                tooltip: () => "显示果树",
+                getValue: () => this.Config.ShowFruitTree,
+                setValue: value => this.Config.ShowFruitTree = value
+            );
         }
 
         private List<TerrainFeature>? GetLocationTerrainFeature(string locationName)
@@ -253,7 +260,7 @@ namespace BetterFarmComputer
             if (Config != null && !Config.ShowFarm)
                 goto GreenHouse;
             //Farm
-            Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("Farm"), out int hoeDirtCount_Farm, out int cropCount_Farm, out int readyForHarvestCount_Farm, out int needsWateringCount_Farm);
+            Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("Farm"), out int hoeDirtCount_Farm, out int cropCount_Farm, out int readyForHarvestCount_Farm, out int needsWateringCount_Farm,out var _,out var _);
             Analyse.AnalyseBuildingList(GetLocationBuildingList("Farm"), out var buildingStruct_Farm);
             Analyse.GetPiecesOfHay(out int hayCount);
             Analyse.AnalyseObjectsList(GetLocationObjectList("Farm"), out AnalyseObjectStruct objStruct_Farm);
@@ -274,7 +281,7 @@ namespace BetterFarmComputer
             if (Config!=null&& !Config.ShowGreenHouse)
                 goto IslandWest;
             //Greenhouse
-            Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("GreenHouse"), out int hoeDirtCount_GreenHouse, out int cropCount_GreenHouse, out int readyForHarvestCount_GreenHouse, out int needsWateringCount_GreenHouse);
+            Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("GreenHouse"), out int hoeDirtCount_GreenHouse, out int cropCount_GreenHouse, out int readyForHarvestCount_GreenHouse, out int needsWateringCount_GreenHouse, out var _, out var _);
             var greenhouseList = new List<string>
             {
                 $"{Game1.player.Name}的温室报告:",
@@ -290,7 +297,7 @@ namespace BetterFarmComputer
             if (Config != null && !Config.ShowIslandWest)
                 goto Other;
             //IslandWest
-            Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("IslandWest"), out int hoeDirtCount_IslandWest, out int cropCount_IslandWest, out int readyForHarvestCount_IslandWest, out int needsWateringCount_IslandWest);
+            Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("IslandWest"), out int hoeDirtCount_IslandWest, out int cropCount_IslandWest, out int readyForHarvestCount_IslandWest, out int needsWateringCount_IslandWest, out var _, out var _);
             var islandWestList = new List<string>
             {
                 $"{Game1.player.Name}的姜岛报告:",
@@ -312,14 +319,20 @@ namespace BetterFarmComputer
 
             Analyse.AnalyseObjectsList(GetLocationObjectList("Cellar"), out var objs_Cellar);
 
+            int canHarvestFruitTree = 0;
+            int fruitTreeCount = 0;
+
             foreach (GameLocation location in locations)
             {
                 if (location != null)
                 {
                     Analyse.AnalyseObjectsList(GetLocationObjectList(location), out var tempobj);
                     Analyse.AnalyseBuildingList(GetLocationBuildingList(location), out var tempbuilds);
+                    Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature(location), out var _, out var _, out var _, out var _, out var _canHarvestFruitTree, out var _fruitTreeCount);
                     objsStruct_ALL.Add(tempobj);
                     buildingStruct_ALL.Add(tempbuilds);
+                    canHarvestFruitTree += _canHarvestFruitTree;
+                    fruitTreeCount += _fruitTreeCount;
                 }
             }
 
@@ -381,6 +394,11 @@ namespace BetterFarmComputer
                 allList.Add($"烘干机:{dehydrator.count}");
                 allList.Add($"可收获烘干机:{dehydrator.readyForHarvestCount}");
                 allList.Add($"空闲烘干机:{dehydrator.emptyCount}");
+            }
+            if (Config == null || Config.ShowFruitTree)
+            {
+                allList.Add($"果树:{fruitTreeCount}");
+                allList.Add($"可收获果树:{canHarvestFruitTree}");
             }
             strs.Add(allList);
 

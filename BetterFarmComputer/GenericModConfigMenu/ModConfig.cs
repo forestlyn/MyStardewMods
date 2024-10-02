@@ -14,5 +14,7 @@
         public bool ShowPreserveJar { get; set; } = true;
         public bool ShowMushroomLog { get; set; } = true;
         public bool ShowDehydrator { get; set; } = true;
+        public bool ShowFruitTree { get; set; } = true;
+
     }
 }

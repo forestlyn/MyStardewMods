@@ -143,12 +143,15 @@ namespace BetterFarmComputer
             }
         }
 
-        private void AnalyseTerrainFeature(TerrainFeature terrainFeature, out bool isHoeDirt, out bool hasCrop, out bool readyForHarvest, out bool needsWatering)
+        private void AnalyseTerrainFeature(TerrainFeature terrainFeature, out bool isHoeDirt, out bool hasCrop, 
+            out bool readyForHarvest, out bool needsWatering,out int fruitCount,out int fruitTreeCount)
         {
             isHoeDirt = false;
             readyForHarvest = false;
             hasCrop = false;
             needsWatering = false;
+            fruitCount = 0;
+            fruitTreeCount = 0;
             if (terrainFeature is null)
             {
                 return;
@@ -174,20 +177,32 @@ namespace BetterFarmComputer
                     MyLog.Log($"{ex}", LogLevel.Debug);
                 }
             }
+            if(terrainFeature is FruitTree)
+            {
+                FruitTree tree = (FruitTree)terrainFeature;
+                fruitCount = tree.fruit.Count;
+                fruitTreeCount = 1;
+            }
         }
-        public void AnalyseTerrainFeatureList(List<TerrainFeature>? terrainFeatureList, out int hoeDirtCount, out int cropCount, out int readyForHarvestCount, out int needsWateringCount)
+        public void AnalyseTerrainFeatureList(List<TerrainFeature>? terrainFeatureList, out int hoeDirtCount, 
+            out int cropCount, out int readyForHarvestCount, out int needsWateringCount,
+            out int canHarvestFruitTree,out int fruitTreeCount)
         {
             hoeDirtCount = 0;
             cropCount = 0;
             readyForHarvestCount = 0;
             needsWateringCount = 0;
+            canHarvestFruitTree = 0;
+            fruitTreeCount = 0;
             if (terrainFeatureList == null)
             {
                 return;
             }
             foreach (var terrain in terrainFeatureList)
             {
-                AnalyseTerrainFeature(terrain, out bool isHoeDirt, out bool hasCrop, out bool readyForHarvest, out bool needsWatering);
+                AnalyseTerrainFeature(terrain, out bool isHoeDirt, out bool hasCrop, 
+                    out bool readyForHarvest, out bool needsWatering, 
+                    out int fruitCount, out int _fruitTreeCount);
                 if (isHoeDirt)
                 {
                     hoeDirtCount++;
@@ -204,6 +219,11 @@ namespace BetterFarmComputer
                 {
                     needsWateringCount++;
                 }
+                if(fruitCount > 0)
+                {
+                    canHarvestFruitTree++;
+                }
+                fruitTreeCount += _fruitTreeCount;
             }
         }
 
