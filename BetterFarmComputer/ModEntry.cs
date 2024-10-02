@@ -31,7 +31,7 @@ namespace BetterFarmComputer
 
             this.Config = this.Helper.ReadConfig<ModConfig>();
 
-            helper.Events.Input.ButtonPressed += this.OnButtonPressed;
+            helper.Events.Input.ButtonsChanged += this.OnButtonsChanged;
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
             MyLog.Monitor = this.Monitor;
         }
@@ -55,6 +55,15 @@ namespace BetterFarmComputer
             );
 
             // add some config options
+
+            configMenu.AddKeybindList(
+                mod: this.ModManifest,
+                getValue: () => this.Config.ToggleFarmComputer,
+                setValue: value => this.Config.ToggleFarmComputer = value,
+                name: () => "打开农场信息",
+                tooltip: () => "打开农场信息"
+            );
+
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
                 name: () => "显示农场信息",
@@ -241,13 +250,13 @@ namespace BetterFarmComputer
         /// <summary>Raised after the player presses a button on the keyboard, controller, or mouse.</summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event data.</param>
-        private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
+        private void OnButtonsChanged(object? sender, ButtonsChangedEventArgs e)
         {
             // ignore if player hasn't loaded a save yet
             if (!Context.IsWorldReady)
                 return;
 
-            if (e.Button == SButton.L)
+            if (Config.ToggleFarmComputer.JustPressed())
             {
                 ToggleMyMenu();
             }

@@ -1,7 +1,12 @@
-﻿namespace BetterFarmComputer
+﻿using StardewModdingAPI.Utilities;
+using StardewModdingAPI;
+
+namespace BetterFarmComputer
 {
     public class ModConfig
     {
+        public KeybindList ToggleFarmComputer { get; set; } = new(SButton.L);
+
         public bool ShowFarm { get; set; } = true;
         public bool ShowGreenHouse { get;  set; } = true;
         public bool ShowIslandWest { get;  set; } = true;
@@ -15,6 +20,7 @@
         public bool ShowMushroomLog { get; set; } = true;
         public bool ShowDehydrator { get; set; } = true;
         public bool ShowFruitTree { get; set; } = true;
+
 
     }
 }
