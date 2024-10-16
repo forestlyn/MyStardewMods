@@ -29,6 +29,12 @@ namespace BetterFarmComputer
 
         /// <summary>An up arrow.</summary>
         public static readonly Rectangle UpArrow = new(76, 72, 40, 44);
+
+        /// <summary>A left arrow.</summary>
+        public static readonly Rectangle LeftArrow = new(8, 268, 44, 40);
+
+        /// <summary>A right arrow.</summary>
+        public static readonly Rectangle RightArrow = new(12, 204, 44, 40);
     }
 
     public class MyMenu : IClickableMenu
@@ -41,14 +47,27 @@ namespace BetterFarmComputer
         /// <summary>The clickable 'scroll down' icon.</summary>
         private readonly ClickableTextureComponent ScrollDownButton;
 
+
+        private readonly ClickableTextureComponent LeftButton;
+        private readonly ClickableTextureComponent RigthButton;
+
         /// <summary>The spacing around the scroll buttons.</summary>
         private readonly int ScrollButtonGutter = 15;
         private int CurrentScroll;
         private readonly int ScrollAmount = 160;
         private int MaxScroll;
 
-        public MyMenu()
+        private ModEntry modEntry;
+        public int CurrentIndex
         {
+            get=> modEntry.CurrentMenuIdx;
+            set => modEntry.CurrentMenuIdx = value;
+        }
+        public static int IndexCount = ModEntry.MenuIdxCount;
+
+        public MyMenu(ModEntry modEntry)
+        {
+            this.modEntry = modEntry;
             var viewport = Game1.graphics.GraphicsDevice.Viewport;
             this.width = 1280;
             this.height = 720;
@@ -60,6 +79,8 @@ namespace BetterFarmComputer
 
             this.ScrollUpButton = new ClickableTextureComponent(Rectangle.Empty, Icons.Sheet, Icons.UpArrow, 1);
             this.ScrollDownButton = new ClickableTextureComponent(Rectangle.Empty, Icons.Sheet, Icons.DownArrow, 1);
+            this.LeftButton = new ClickableTextureComponent(Rectangle.Empty, Icons.Sheet, Icons.LeftArrow, 1);
+            this.RigthButton = new ClickableTextureComponent(Rectangle.Empty, Icons.Sheet, Icons.RightArrow, 1);
             this.UpdateLayout();
         }
 
@@ -74,6 +95,9 @@ namespace BetterFarmComputer
 
             this.ScrollUpButton.bounds = new Rectangle((int)(x + contentWidth), (int)(y + contentHeight - Icons.UpArrow.Height - gutter - Icons.DownArrow.Height), Icons.UpArrow.Height, Icons.UpArrow.Width);
             this.ScrollDownButton.bounds = new Rectangle((int)(x + contentWidth), (int)(y + contentHeight - Icons.DownArrow.Height), Icons.DownArrow.Height, Icons.DownArrow.Width);
+            this.LeftButton.bounds = new Rectangle((int)(x+contentWidth), (int)(y + Icons.LeftArrow.Height + gutter), Icons.LeftArrow.Height, Icons.LeftArrow.Width);
+            this.RigthButton.bounds = new Rectangle((int)(x + contentWidth), (int)(y + Icons.DownArrow.Height + gutter*5), Icons.RightArrow.Height, Icons.RightArrow.Width);
+
         }
 
         private readonly BlendState ContentBlendState = new()
@@ -116,6 +140,21 @@ namespace BetterFarmComputer
                 this.ScrollUp();
             else if (this.ScrollDownButton.containsPoint(x, y))
                 this.ScrollDown();
+
+            else if(this.LeftButton.containsPoint(x, y))
+            {
+                if (CurrentIndex > 0)
+                {
+                    CurrentIndex--;
+                }
+            }
+            else if (this.RigthButton.containsPoint(x, y))
+            {
+                if (CurrentIndex < IndexCount - 1)
+                {
+                    CurrentIndex++;
+                }
+            }
         }
 
         /// <summary>The method called when the player presses a controller button.</summary>
@@ -143,6 +182,18 @@ namespace BetterFarmComputer
                 // scroll down
                 case Buttons.RightThumbstickDown:
                     this.ScrollDown();
+                    break;
+                case Buttons.DPadLeft:
+                    if (CurrentIndex > 0)
+                    {
+                        CurrentIndex--;
+                    }
+                    break;
+                case Buttons.DPadRight:
+                    if (CurrentIndex < IndexCount-1)
+                    {
+                        CurrentIndex++;
+                    }
                     break;
             }
         }
@@ -218,7 +269,10 @@ namespace BetterFarmComputer
 
                             }
                             maxYDelta = Math.Max(maxYDelta, y - yPositionOnScreen);
-                            x += 250;
+                            if (CurrentIndex == 0)
+                                x += 250;
+                            else if (CurrentIndex == 1)
+                                x += 500;
                             y = yPositionOnScreen;
                         }
                         topOffset += maxYDelta;
@@ -234,6 +288,13 @@ namespace BetterFarmComputer
                         this.ScrollUpButton.draw(contentBatch);
                     if (this.MaxScroll > 0 && this.CurrentScroll < this.MaxScroll)
                         this.ScrollDownButton.draw(contentBatch);
+
+                    //draw left right
+                    if (CurrentIndex > 0)
+                        this.LeftButton.draw(contentBatch);
+                    if (CurrentIndex < IndexCount - 1)
+                        this.RigthButton.draw(contentBatch);
+
 
                     contentBatch.End();
                 }

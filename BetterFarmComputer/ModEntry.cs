@@ -7,6 +7,7 @@ using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Network;
 using StardewValley.TerrainFeatures;
+using System;
 using Object = StardewValley.Object;
 
 namespace BetterFarmComputer
@@ -19,6 +20,21 @@ namespace BetterFarmComputer
         public Analyse Analyse { get { return analyse; } }
 
         public ModConfig Config { get; private set; }
+
+        private int currentMenuIdx = 0;
+        public int CurrentMenuIdx
+        {
+            get => currentMenuIdx;
+            set
+            {
+                if (value >= 0 && value < MenuIdxCount)
+                {
+                    currentMenuIdx = value;
+                    ShowMyMenu(CurrentMenuIdx);
+                }
+            }
+        }
+        public static int MenuIdxCount = 2;
 
         /*********
         ** Public methods
@@ -262,14 +278,14 @@ namespace BetterFarmComputer
             }
         }
 
-        private List<List<string>> GetAnalyseStringLists()
+        private List<List<string>> GetFarmAnalyseStringLists()
         {
             var strs = new List<List<string>>();
 
             if (Config != null && !Config.ShowFarm)
                 goto GreenHouse;
             //Farm
-            Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("Farm"), out int hoeDirtCount_Farm, out int cropCount_Farm, out int readyForHarvestCount_Farm, out int needsWateringCount_Farm,out var _,out var _);
+            Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("Farm"), out int hoeDirtCount_Farm, out int cropCount_Farm, out int readyForHarvestCount_Farm, out int needsWateringCount_Farm, out var _, out var _);
             Analyse.AnalyseBuildingList(GetLocationBuildingList("Farm"), out var buildingStruct_Farm);
             Analyse.GetPiecesOfHay(out int hayCount);
             Analyse.AnalyseObjectsList(GetLocationObjectList("Farm"), out AnalyseObjectStruct objStruct_Farm);
@@ -287,7 +303,7 @@ namespace BetterFarmComputer
             strs.Add(farmlist);
 
         GreenHouse:
-            if (Config!=null&& !Config.ShowGreenHouse)
+            if (Config != null && !Config.ShowGreenHouse)
                 goto IslandWest;
             //Greenhouse
             Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("GreenHouse"), out int hoeDirtCount_GreenHouse, out int cropCount_GreenHouse, out int readyForHarvestCount_GreenHouse, out int needsWateringCount_GreenHouse, out var _, out var _);
@@ -396,7 +412,7 @@ namespace BetterFarmComputer
                 allList.Add($"蘑菇树桩:{mushroomLog.count}");
                 allList.Add($"可收获蘑菇树桩:{mushroomLog.readyForHarvestCount}");
             }
-            if(Config == null || Config.ShowDehydrator)
+            if (Config == null || Config.ShowDehydrator)
             {
                 var dehydrator = objsStruct_ALL.GetType(ObjectStructType.Dehydrator) +
                     buildingStruct_ALL.analyseObjectStruct.GetType(ObjectStructType.Dehydrator);
@@ -419,18 +435,96 @@ namespace BetterFarmComputer
 
         private void ToggleMyMenu()
         {
+            currentMenuIdx = 0;
             if (Game1.activeClickableMenu is MyMenu)
                 this.HideMyMenu();
             else
-                this.ShowMyMenu();
+                this.ShowMyMenu(CurrentMenuIdx);
         }
 
-        private void ShowMyMenu()
+        private void ShowMyMenu(int idx)
         {
-            MyMenu myMenu = new MyMenu();
-            myMenu.SetContentLists(GetAnalyseStringLists());
+            MyMenu myMenu = new MyMenu(this);
+            myMenu.SetContentLists(GetAnalyseStringLists(idx));
             Game1.activeClickableMenu = myMenu;
             //myMenu.draw(null);
+        }
+
+        private List<List<string>> GetAnalyseStringLists(int currentMenuIdx)
+        {
+            switch (currentMenuIdx)
+            {
+                case 0:
+                    return GetFarmAnalyseStringLists();
+                case 1:
+                    return GetStateStringLists();
+                default:
+                    return GetFarmAnalyseStringLists();
+            }
+        }
+
+        private List<List<string>> GetStateStringLists()
+        {
+            List<List<string>> res = new List<List<string>>();
+
+            Farmer key = Game1.player;
+            float percentGameComplete = StardewValley.Utility.percentGameComplete();
+            float getFarmerItemsShippedPercent = Utility.GetFarmCompletion((Farmer farmer) => Utility.getFarmerItemsShippedPercent(farmer)).Value;
+            float getObeliskTypesBuilt = Math.Min(Utility.GetObeliskTypesBuilt(), 4f);
+            bool isBuildingConstructed = Game1.IsBuildingConstructed("Gold Clock");
+            bool hasCompletedAllMonsterSlayerQuests = Utility.GetFarmCompletion((Farmer farmer) => farmer.hasCompletedAllMonsterSlayerQuests.Value).Value;
+            float getMaxedFriendshipPercent = Utility.GetFarmCompletion((Farmer farmer) => Utility.getMaxedFriendshipPercent(farmer)).Value;
+            float farmLevel = Utility.GetFarmCompletion((Farmer farmer) => Math.Min(farmer.Level, 25f) / 25f).Value;
+            bool foundAllStardrops = Utility.GetFarmCompletion((Farmer farmer) => Utility.foundAllStardrops(farmer)).Value;
+            float getCookedRecipesPercent = Utility.GetFarmCompletion((Farmer farmer) => Utility.getCookedRecipesPercent(farmer)).Value;
+            float getCraftedRecipesPercent = Utility.GetFarmCompletion((Farmer farmer) => Utility.getCraftedRecipesPercent(farmer)).Value;
+            float getFishCaughtPercent = Utility.GetFarmCompletion((Farmer farmer) => Utility.getFishCaughtPercent(farmer)).Value;
+            float GoldenWalnutsCount = 130f;
+            float GoldenWalnutsFound = Math.Min(Game1.netWorldState.Value.GoldenWalnutsFound, GoldenWalnutsCount);
+
+            string isBuildingConstructedStr = isBuildingConstructed ? "是" : "否";
+            string foundAllStardropsStr = foundAllStardrops ? "是" : "否";
+            string hasCompletedAllMonsterSlayerQuestsStr = hasCompletedAllMonsterSlayerQuests ? "是" : "否";
+            var perfectList = new List<string>()
+            {
+                $"完美度统计",
+                $"--------------",
+                $"已售出的产品和采集品:{(getFarmerItemsShippedPercent * 100f).ToString("F2")}%",
+                $"农场上的图腾柱:{getObeliskTypesBuilt}/4",
+                $"农场上有黄金时钟:{isBuildingConstructedStr}",
+                $"杀怪英雄:{hasCompletedAllMonsterSlayerQuestsStr}",
+                $"好朋友:{(getMaxedFriendshipPercent * 100f).ToString("F2")}%",
+                $"农场主等级:{farmLevel*25}/25",
+                $"找到所有星之果实:{foundAllStardropsStr}",
+                $"制作的烹饪食谱:{(getCookedRecipesPercent * 100f).ToString("F2")}%",
+                $"制作的制造设计图:{(getCraftedRecipesPercent * 100f).ToString("F2")}%",
+                $"捕获的鱼:{(getFishCaughtPercent * 100f).ToString("F2")}%",
+                $"找到的金色核桃:{GoldenWalnutsFound}/{GoldenWalnutsCount}",
+                $"--------------",
+                $"总完成度:{(percentGameComplete * 100f).ToString("F2")}%",
+            };
+            res.Add(perfectList);
+
+            //赌场信息
+            var stats = Game1.player.stats;
+            List<string> statList = new List<string>
+            {
+                "文件:" + Game1.player.Name,
+                "迈出的步数:" + stats.StepsTaken,
+                "送出的礼物:" + stats.GiftsGiven,
+                "在星露谷住的天数:" + stats.DaysPlayed,
+                "锄过的地:" + stats.DirtHoed,
+                "制作的物品:" + stats.ItemsCrafted,
+                "烹饪的菜式:" + stats.ItemsCooked,
+                "回收的垃圾:" + stats.PiecesOfTrashRecycled,
+                "杀死的怪物:" + stats.MonstersKilled,
+                "抓捕的鱼类:" + stats.FishCaught,
+                "投掷的渔线:" + stats.TimesFished,
+                "播下的种子:" + stats.SeedsSown,
+                "运送的物品:" + stats.ItemsShipped
+            };
+            res.Add(statList);
+            return res;
         }
 
         private void HideMyMenu()
