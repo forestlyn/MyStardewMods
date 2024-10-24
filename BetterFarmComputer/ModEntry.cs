@@ -50,6 +50,7 @@ namespace BetterFarmComputer
             helper.Events.Input.ButtonsChanged += this.OnButtonsChanged;
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
             MyLog.Monitor = this.Monitor;
+            MyHelper.SetHelper(helper);
         }
 
         private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
@@ -76,95 +77,95 @@ namespace BetterFarmComputer
                 mod: this.ModManifest,
                 getValue: () => this.Config.ToggleFarmComputer,
                 setValue: value => this.Config.ToggleFarmComputer = value,
-                name: () => "打开农场信息",
-                tooltip: () => "打开农场信息"
+                name: () => MyHelper.GetTranslation("openFarmInfoButton"),
+                tooltip: () => MyHelper.GetTranslation("openFarmInfoButton")
             );
 
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "显示农场信息",
-                tooltip: () => "显示农场信息",
+                name: () => MyHelper.GetTranslation("showFarmInfo"),
+                tooltip: () => MyHelper.GetTranslation("showFarmInfo"),
                 getValue: () => this.Config.ShowFarm,
                 setValue: value => this.Config.ShowFarm = value
             );
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "显示温室信息",
-                tooltip: () => "显示温室信息",
+                name: () => MyHelper.GetTranslation("showFarmInfo"),
+                tooltip: () => MyHelper.GetTranslation("showGreenHouseInfo"),
                 getValue: () => this.Config.ShowGreenHouse,
                 setValue: value => this.Config.ShowGreenHouse = value
             );
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "显示姜岛信息",
-                tooltip: () => "显示姜岛信息",
+                name: () => MyHelper.GetTranslation("showGingerIslandInfo"),
+                tooltip: () => MyHelper.GetTranslation("showGingerIslandInfo"),
                 getValue: () => this.Config.ShowIslandWest,
                 setValue: value => this.Config.ShowIslandWest = value
             );
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "显示其它信息",
-                tooltip: () => "显示其它信息",
+                name: () => MyHelper.GetTranslation("showOtherInfo"),
+                tooltip: () => MyHelper.GetTranslation("showOtherInfo"),
                 getValue: () => this.Config.ShowOther,
                 setValue: value => this.Config.ShowOther = value
             );
 
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "显示树液采集器",
-                tooltip: () => "显示树液采集器",
+                name: () => MyHelper.GetTranslation("showTapperInfo"),
+                tooltip: () => MyHelper.GetTranslation("showTapperInfo"),
                 getValue: () => this.Config.ShowTapper,
                 setValue: value => this.Config.ShowTapper = value
             );
 
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "显示小桶",
-                tooltip: () => "显示小桶",
+                name: () => MyHelper.GetTranslation("showKegInfo"),
+                tooltip: () => MyHelper.GetTranslation("showKegInfo"),
                 getValue: () => this.Config.ShowKeg,
                 setValue: value => this.Config.ShowKeg = value
             );
 
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "显示蜂房",
-                tooltip: () => "显示蜂房",
+                name: () => MyHelper.GetTranslation("showBeeHouseInfo"),
+                tooltip: () => MyHelper.GetTranslation("showBeeHouseInfo"),
                 getValue: () => this.Config.ShowBeeHouse,
                 setValue: value => this.Config.ShowBeeHouse = value
             );
 
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "显示地窖木桶",
-                tooltip: () => "显示地窖木桶",
+                name: () => MyHelper.GetTranslation("showCaskInfo"),
+                tooltip: () => MyHelper.GetTranslation("showCaskInfo"),
                 getValue: () => this.Config.ShowCask,
                 setValue: value => this.Config.ShowCask = value
             );
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "显示罐头瓶",
-                tooltip: () => "显示罐头瓶",
+                name: () => MyHelper.GetTranslation("showPreserveJarInfo"),
+                tooltip: () => MyHelper.GetTranslation("showPreserveJarInfo"),
                 getValue: () => this.Config.ShowPreserveJar,
                 setValue: value => this.Config.ShowPreserveJar = value
             );
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "显示蘑菇树桩",
-                tooltip: () => "显示蘑菇树桩",
+                name: () => MyHelper.GetTranslation("showMushroomLogInfo"),
+                tooltip: () => MyHelper.GetTranslation("showMushroomLogInfo"),
                 getValue: () => this.Config.ShowMushroomLog,
                 setValue: value => this.Config.ShowMushroomLog = value
             );
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "显示烘干机",
-                tooltip: () => "显示烘干机",
+                name: () => MyHelper.GetTranslation("showDehydratorInfo"),
+                tooltip: () => MyHelper.GetTranslation("showDehydratorInfo"),
                 getValue: () => this.Config.ShowDehydrator,
                 setValue: value => this.Config.ShowDehydrator = value
             );
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "显示果树",
-                tooltip: () => "显示果树",
+                name: () => MyHelper.GetTranslation("showFruitTreeInfo"),
+                tooltip: () => MyHelper.GetTranslation("showFruitTreeInfo"),
                 getValue: () => this.Config.ShowFruitTree,
                 setValue: value => this.Config.ShowFruitTree = value
             );
@@ -291,14 +292,14 @@ namespace BetterFarmComputer
             Analyse.AnalyseObjectsList(GetLocationObjectList("Farm"), out AnalyseObjectStruct objStruct_Farm);
             var farmlist = new List<string>
             {
-                $"{Game1.player.Name}的农场报告:",
+                $"{Game1.player.Name} {MyHelper.GetTranslation("farmReport")}:",
                 $"--------------",
-                $"干草:{hayCount}/{buildingStruct_Farm.GetType(BuildingStructType.Hay).capacity}",
-                $"农作物总量:{cropCount_Farm}",
-                $"可收成农作物:{readyForHarvestCount_Farm}",
-                $"未浇水农作物:{needsWateringCount_Farm}",
-                $"开耕土壤:{hoeDirtCount_Farm - cropCount_Farm}",
-                $"松露数量:{objStruct_Farm.GetType(ObjectStructType.Truffle).count}",
+                $"{MyHelper.GetTranslation("hay")}:{hayCount}/{buildingStruct_Farm.GetType(BuildingStructType.Hay).capacity}",
+                $"{MyHelper.GetTranslation("cropCount")}:{cropCount_Farm}",
+                $"{MyHelper.GetTranslation("readyForHarvestCount")}:{readyForHarvestCount_Farm}",
+                $"{MyHelper.GetTranslation("needsWateringCount")}:{needsWateringCount_Farm}",
+                $"{MyHelper.GetTranslation("hoeDirtCount")}:{hoeDirtCount_Farm - cropCount_Farm}",
+                $"{MyHelper.GetTranslation("truffleCount")}:{objStruct_Farm.GetType(ObjectStructType.Truffle).count}",
             };
             strs.Add(farmlist);
 
@@ -309,12 +310,12 @@ namespace BetterFarmComputer
             Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("GreenHouse"), out int hoeDirtCount_GreenHouse, out int cropCount_GreenHouse, out int readyForHarvestCount_GreenHouse, out int needsWateringCount_GreenHouse, out var _, out var _);
             var greenhouseList = new List<string>
             {
-                $"{Game1.player.Name}的温室报告:",
+                $"{Game1.player.Name} {MyHelper.GetTranslation("greenHouseReport")}:",
                 $"--------------",
-                $"农作物总量:{cropCount_GreenHouse}",
-                $"可收成农作物:{readyForHarvestCount_GreenHouse}",
-                $"未浇水农作物:{needsWateringCount_GreenHouse}",
-                $"开耕土壤:{hoeDirtCount_GreenHouse - cropCount_GreenHouse}"
+                $"{MyHelper.GetTranslation("cropCount")}:{cropCount_GreenHouse}",
+                $"{MyHelper.GetTranslation("readyForHarvestCount")}:{readyForHarvestCount_GreenHouse}",
+                $"{MyHelper.GetTranslation("needsWateringCount")}:{needsWateringCount_GreenHouse}",
+                $"{MyHelper.GetTranslation("hoeDirtCount")}:{hoeDirtCount_GreenHouse - cropCount_GreenHouse}"
             };
             strs.Add(greenhouseList);
 
@@ -325,12 +326,12 @@ namespace BetterFarmComputer
             Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("IslandWest"), out int hoeDirtCount_IslandWest, out int cropCount_IslandWest, out int readyForHarvestCount_IslandWest, out int needsWateringCount_IslandWest, out var _, out var _);
             var islandWestList = new List<string>
             {
-                $"{Game1.player.Name}的姜岛报告:",
+                $"{Game1.player.Name} {MyHelper.GetTranslation("gingerIslandReport")}:",
                 $"--------------",
-                $"农作物总量:{cropCount_IslandWest}",
-                $"可收成农作物:{readyForHarvestCount_IslandWest}",
-                $"未浇水农作物:{needsWateringCount_IslandWest}",
-                $"开耕土壤:{hoeDirtCount_IslandWest - cropCount_IslandWest}"
+                $"{MyHelper.GetTranslation("cropCount")}:{cropCount_IslandWest}",
+                $"{MyHelper.GetTranslation("readyForHarvestCount")}:{readyForHarvestCount_IslandWest}",
+                $"{MyHelper.GetTranslation("needsWateringCount")}:{needsWateringCount_IslandWest}",
+                $"{MyHelper.GetTranslation("hoeDirtCount")}:{hoeDirtCount_IslandWest - cropCount_IslandWest}"
             };
             strs.Add(islandWestList);
 
@@ -364,66 +365,66 @@ namespace BetterFarmComputer
 
             var allList = new List<string>
             {
-                $"{Game1.player.Name}的其它报告:",
+                $"{Game1.player.Name} {MyHelper.GetTranslation("otherReport")}:",
                 $"--------------",
             };
             if (Config == null || Config.ShowTapper)
             {
                 var heaveTapper = objsStruct_ALL.GetType(ObjectStructType.HeavyTapper);
-                allList.Add($"重型树液采集器:{heaveTapper.count}");
-                allList.Add($"可收成重型树液采集器:{heaveTapper.readyForHarvestCount}");
+                allList.Add($"{MyHelper.GetTranslation("heaveTapper")}:{heaveTapper.count}");
+                allList.Add($"{MyHelper.GetTranslation("heaveTapperReadyForHarvestCount")}:{heaveTapper.readyForHarvestCount}");
                 var tapper = objsStruct_ALL.GetType(ObjectStructType.Tapper);
-                allList.Add($"树液采集器数量:{tapper.count}");
-                allList.Add($"可收成树液采集器:{tapper.readyForHarvestCount}");
+                allList.Add($"{MyHelper.GetTranslation("tapperCount")}:{tapper.count}");
+                allList.Add($"{MyHelper.GetTranslation("tapperReadyForHarvestCount")}:{tapper.readyForHarvestCount}");
             }
             if (Config == null || Config.ShowKeg)
             {
                 var keg = objsStruct_ALL.GetType(ObjectStructType.Keg) +
                     buildingStruct_ALL.analyseObjectStruct.GetType(ObjectStructType.Keg);
-                allList.Add($"小桶数量:{keg.count}");
-                allList.Add($"可收获小桶:{keg.readyForHarvestCount}");
-                allList.Add($"空闲小桶:{keg.emptyCount}");
+                allList.Add($"{MyHelper.GetTranslation("kegCount")}:{keg.count}");
+                allList.Add($"{MyHelper.GetTranslation("kegReadyForHarvestCount")}:{keg.readyForHarvestCount}");
+                allList.Add($"{MyHelper.GetTranslation("kegEmptyCount")}:{keg.emptyCount}");
             }
             if (Config == null || Config.ShowBeeHouse)
             {
                 var beehouse = objsStruct_ALL.GetType(ObjectStructType.BeeHouse) +
                     buildingStruct_ALL.analyseObjectStruct.GetType(ObjectStructType.BeeHouse);
-                allList.Add($"蜂房数量:{beehouse.count}");
-                allList.Add($"可收获蜂房:{beehouse.readyForHarvestCount}");
+                allList.Add($"{MyHelper.GetTranslation("beehouseCount")}:{beehouse.count}");
+                allList.Add($"{MyHelper.GetTranslation("beehouseReadyForHarvestCount")}:{beehouse.readyForHarvestCount}");
             }
             if (Config == null || Config.ShowCask)
             {
                 var cask = objs_Cellar.GetType(ObjectStructType.Cask);
-                allList.Add($"地窖木桶:{cask.count}");
-                allList.Add($"可收获地窖木桶:{cask.readyForHarvestCount}");
-                allList.Add($"空闲地窖木桶:{cask.emptyCount}");
+                allList.Add($"{MyHelper.GetTranslation("caskCount")}:{cask.count}");
+                allList.Add($"{MyHelper.GetTranslation("caskReadyForHarvestCount")}:{cask.readyForHarvestCount}");
+                allList.Add($"{MyHelper.GetTranslation("caskEmptyCount")}:{cask.emptyCount}");
             }
             if (Config == null || Config.ShowPreserveJar)
             {
                 var preserveJar = objsStruct_ALL.GetType(ObjectStructType.PreserveJar) +
                     buildingStruct_ALL.analyseObjectStruct.GetType(ObjectStructType.PreserveJar);
-                allList.Add($"罐头瓶:{preserveJar.count}");
-                allList.Add($"可收获罐头瓶:{preserveJar.readyForHarvestCount}");
-                allList.Add($"空闲罐头瓶:{preserveJar.emptyCount}");
+                allList.Add($"{MyHelper.GetTranslation("preserveJarCount")}:{preserveJar.count}");
+                allList.Add($"{MyHelper.GetTranslation("preserveJarReadyForHarvestCount")}:{preserveJar.readyForHarvestCount}");
+                allList.Add($"{MyHelper.GetTranslation("preserveJarEmptyCount")}:{preserveJar.emptyCount}");
             }
             if (Config == null || Config.ShowMushroomLog)
             {
                 var mushroomLog = objsStruct_ALL.GetType(ObjectStructType.MushroomLog);
-                allList.Add($"蘑菇树桩:{mushroomLog.count}");
-                allList.Add($"可收获蘑菇树桩:{mushroomLog.readyForHarvestCount}");
+                allList.Add($"{MyHelper.GetTranslation("mushroomLogCount")}:{mushroomLog.count}");
+                allList.Add($"{MyHelper.GetTranslation("mushroomLogReadyForHarvestCount")}:{mushroomLog.readyForHarvestCount}");
             }
             if (Config == null || Config.ShowDehydrator)
             {
                 var dehydrator = objsStruct_ALL.GetType(ObjectStructType.Dehydrator) +
                     buildingStruct_ALL.analyseObjectStruct.GetType(ObjectStructType.Dehydrator);
-                allList.Add($"烘干机:{dehydrator.count}");
-                allList.Add($"可收获烘干机:{dehydrator.readyForHarvestCount}");
-                allList.Add($"空闲烘干机:{dehydrator.emptyCount}");
+                allList.Add($"{MyHelper.GetTranslation("dehydratorCount")}:{dehydrator.count}");
+                allList.Add($"{MyHelper.GetTranslation("dehydratorReadyForHarvestCount")}:{dehydrator.readyForHarvestCount}");
+                allList.Add($"{MyHelper.GetTranslation("dehydratorEmptyCount")}:{dehydrator.emptyCount}");
             }
             if (Config == null || Config.ShowFruitTree)
             {
-                allList.Add($"果树:{fruitTreeCount}");
-                allList.Add($"可收获果树:{canHarvestFruitTree}");
+                allList.Add($"{MyHelper.GetTranslation("fruitTreeCount")}:{fruitTreeCount}");
+                allList.Add($"{MyHelper.GetTranslation("canHarvestFruitTree")}:{canHarvestFruitTree}");
             }
             strs.Add(allList);
 
@@ -482,26 +483,28 @@ namespace BetterFarmComputer
             float GoldenWalnutsCount = 130f;
             float GoldenWalnutsFound = Math.Min(Game1.netWorldState.Value.GoldenWalnutsFound, GoldenWalnutsCount);
 
-            string isBuildingConstructedStr = isBuildingConstructed ? "是" : "否";
-            string foundAllStardropsStr = foundAllStardrops ? "是" : "否";
-            string hasCompletedAllMonsterSlayerQuestsStr = hasCompletedAllMonsterSlayerQuests ? "是" : "否";
+            string yesStr = MyHelper.GetTranslation("yes");
+            string noStr = MyHelper.GetTranslation("no");
+            string isBuildingConstructedStr = isBuildingConstructed ? yesStr : noStr;
+            string foundAllStardropsStr = foundAllStardrops ? yesStr : noStr;
+            string hasCompletedAllMonsterSlayerQuestsStr = hasCompletedAllMonsterSlayerQuests ? yesStr : noStr;
             var perfectList = new List<string>()
             {
-                $"完美度统计",
+                $"{MyHelper.GetTranslation("perfectionTracker")}",
                 $"--------------",
-                $"已售出的产品和采集品:{(getFarmerItemsShippedPercent * 100f).ToString("F2")}%",
-                $"农场上的图腾柱:{getObeliskTypesBuilt}/4",
-                $"农场上有黄金时钟:{isBuildingConstructedStr}",
-                $"杀怪英雄:{hasCompletedAllMonsterSlayerQuestsStr}",
-                $"好朋友:{(getMaxedFriendshipPercent * 100f).ToString("F2")}%",
-                $"农场主等级:{farmLevel*25}/25",
-                $"找到所有星之果实:{foundAllStardropsStr}",
-                $"制作的烹饪食谱:{(getCookedRecipesPercent * 100f).ToString("F2")}%",
-                $"制作的制造设计图:{(getCraftedRecipesPercent * 100f).ToString("F2")}%",
-                $"捕获的鱼:{(getFishCaughtPercent * 100f).ToString("F2")}%",
-                $"找到的金色核桃:{GoldenWalnutsFound}/{GoldenWalnutsCount}",
+                $"{MyHelper.GetTranslation("farmerItemsShipped")}:{(getFarmerItemsShippedPercent * 100f).ToString("F2")}%",
+                $"{MyHelper.GetTranslation("obeliskTypesBuilt")}:{getObeliskTypesBuilt}/4",
+                $"{MyHelper.GetTranslation("isBuildingConstructed")}:{isBuildingConstructedStr}",
+                $"{MyHelper.GetTranslation("completedAllMonsterSlayerQuests")}:{hasCompletedAllMonsterSlayerQuestsStr}",
+                $"{MyHelper.GetTranslation("bestFriends")}:{(getMaxedFriendshipPercent * 100f).ToString("F2")}%",
+                $"{MyHelper.GetTranslation("farmLevel")}:{farmLevel*25}/25",
+                $"{MyHelper.GetTranslation("foundAllStardrops")}:{foundAllStardropsStr}",
+                $"{MyHelper.GetTranslation("cookedRecipes")}:{(getCookedRecipesPercent * 100f).ToString("F2")}%",
+                $"{MyHelper.GetTranslation("craftedRecipes")}:{(getCraftedRecipesPercent * 100f).ToString("F2")}%",
+                $"{MyHelper.GetTranslation("fishCaughtPercent")}:{(getFishCaughtPercent * 100f).ToString("F2")}%",
+                $"{MyHelper.GetTranslation("goldenWalnutsFound")}:{GoldenWalnutsFound}/{GoldenWalnutsCount}",
                 $"--------------",
-                $"总完成度:{(percentGameComplete * 100f).ToString("F2")}%",
+                $"{MyHelper.GetTranslation("percentGameComplete")}:{(percentGameComplete * 100f).ToString("F2")}%",
             };
             res.Add(perfectList);
 
@@ -509,19 +512,19 @@ namespace BetterFarmComputer
             var stats = Game1.player.stats;
             List<string> statList = new List<string>
             {
-                "文件:" + Game1.player.Name,
-                "迈出的步数:" + stats.StepsTaken,
-                "送出的礼物:" + stats.GiftsGiven,
-                "在星露谷住的天数:" + stats.DaysPlayed,
-                "锄过的地:" + stats.DirtHoed,
-                "制作的物品:" + stats.ItemsCrafted,
-                "烹饪的菜式:" + stats.ItemsCooked,
-                "回收的垃圾:" + stats.PiecesOfTrashRecycled,
-                "杀死的怪物:" + stats.MonstersKilled,
-                "抓捕的鱼类:" + stats.FishCaught,
-                "投掷的渔线:" + stats.TimesFished,
-                "播下的种子:" + stats.SeedsSown,
-                "运送的物品:" + stats.ItemsShipped
+                $"{MyHelper.GetTranslation("file")}:" + Game1.player.Name,
+                $"{MyHelper.GetTranslation("stepsTaken")}:" + stats.StepsTaken,
+                $"{MyHelper.GetTranslation("GiftsGiven")}:" + stats.GiftsGiven,
+                $"{MyHelper.GetTranslation("DaysPlayed")}:" + stats.DaysPlayed,
+                $"{MyHelper.GetTranslation("DirtHoed")}:" + stats.DirtHoed,
+                $"{MyHelper.GetTranslation("ItemsCrafted")}:" + stats.ItemsCrafted,
+                $"{MyHelper.GetTranslation("ItemsCooked")}:" + stats.ItemsCooked,
+                $"{MyHelper.GetTranslation("PiecesOfTrashRecycled")}:" + stats.PiecesOfTrashRecycled,
+                $"{MyHelper.GetTranslation("MonstersKilled")}:" + stats.MonstersKilled,
+                $"{MyHelper.GetTranslation("FishCaught")}:" + stats.FishCaught,
+                $"{MyHelper.GetTranslation("TimesFished")}:" + stats.TimesFished,
+                $"{MyHelper.GetTranslation("SeedsSown")}:" + stats.SeedsSown,
+                $"{MyHelper.GetTranslation("ItemsShipped")}:" + stats.ItemsShipped
             };
             res.Add(statList);
             return res;

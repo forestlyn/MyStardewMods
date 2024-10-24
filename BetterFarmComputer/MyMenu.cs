@@ -39,7 +39,8 @@ namespace BetterFarmComputer
 
     public class MyMenu : IClickableMenu
     {
-        private SpriteFont font = Game1.dialogueFont;
+        private SpriteFont font = Game1.smallFont;
+
         private List<List<string>>? contentList;
 
         private readonly ClickableTextureComponent ScrollUpButton;
