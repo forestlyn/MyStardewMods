@@ -17,7 +17,8 @@ namespace BetterFarmComputer.Struct
         Cask,
         PreserveJar,
         MushroomLog,
-        Dehydrator
+        Dehydrator,
+        FishSmoker
     }
     public class ObjectStruct
     {

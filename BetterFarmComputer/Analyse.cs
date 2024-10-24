@@ -51,6 +51,10 @@ namespace BetterFarmComputer
                     useEmpty = true;
                     useReadyForHaverst = true;
                     return ObjectStructType.Dehydrator;
+                case ItemId.FishSmokerItemID:
+                    useEmpty = true;
+                    useReadyForHaverst = true;
+                    return ObjectStructType.FishSmoker;
             }
             useEmpty = false;
             useReadyForHaverst = false;

@@ -17,5 +17,6 @@ namespace BetterFarmComputer.Struct
         public const string PreserveJarItemID = "15";
         public const string MushroomLogItemID = "MushroomLog";
         public const string DehydratorItemID = "Dehydrator";
+        public const string FishSmokerItemID = "FishSmoker";
     }
 }

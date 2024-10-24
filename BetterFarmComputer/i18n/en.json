@@ -31,6 +31,9 @@
     "dehydratorEmptyCount": "Dehydrator Empty",
     "fruitTreeCount": "Total Fruit Tree",
     "canHarvestFruitTree": "Fruit Tree Ready",
+    "fishSmokerCount": "Total Fish Smoker",
+    "fishSmokerReadyForHarvestCount": "Fish Smoker Ready",
+    "fishSmokerEmptyCount": "Fish Smoker Empty",
     "perfectionTracker": "Perfection Tracker",
     "farmerItemsShipped": "Produce & Forage Shipped",
     "obeliskTypesBuilt": "Obelisks On Farm",
@@ -71,5 +74,6 @@
     "showPreserveJarInfo": "Show PreserveJar Info",
     "showMushroomLogInfo": "Show Mushroom Log Info",
     "showDehydratorInfo": "Show Dehydrator Info",
-    "showFruitTreeInfo": "Show Fruit Tree Info"
+    "showFruitTreeInfo": "Show Fruit Tree Info",
+    "showFishSmokerInfo": "show Fish Smoker Info"
 }

@@ -12,6 +12,8 @@ and it support GenericModConfigMenu, you can choose show infos
 
 1.2.0：现增加英文翻译
 
+1.2.1：增加熏鱼机
+
 ![ce206aef2bd2d1e96d1a084b5a904b9b](https://cdn.jsdelivr.net/gh/forestlyn/Drawing-bed/blog/ce206aef2bd2d1e96d1a084b5a904b9b.png)
 
 ![3fd655daeb36ead3de0fd45100c7f480](https://cdn.jsdelivr.net/gh/forestlyn/Drawing-bed/blog/3fd655daeb36ead3de0fd45100c7f480.png)

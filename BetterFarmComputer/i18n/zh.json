@@ -31,6 +31,9 @@
     "dehydratorEmptyCount": "空闲烘干机",
     "fruitTreeCount": "果树",
     "canHarvestFruitTree": "可收获果树",
+    "fishSmokerCount": "熏鱼机",
+    "fishSmokerReadyForHarvestCount": "可收获熏鱼机",
+    "fishSmokerEmptyCount": "空闲熏鱼机",
     "perfectionTracker": "完美度统计",
     "farmerItemsShipped": "已售出的产品和采集品",
     "obeliskTypesBuilt": "农场上的图腾柱",
@@ -71,5 +74,6 @@
     "showPreserveJarInfo": "显示罐头瓶",
     "showMushroomLogInfo": "显示蘑菇树桩",
     "showDehydratorInfo": "显示烘干机",
-    "showFruitTreeInfo": "显示果树"
+    "showFruitTreeInfo": "显示果树",
+    "showFishSmokerInfo": "显示熏鱼机"
 }

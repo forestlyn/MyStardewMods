@@ -169,6 +169,13 @@ namespace BetterFarmComputer
                 getValue: () => this.Config.ShowFruitTree,
                 setValue: value => this.Config.ShowFruitTree = value
             );
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => MyHelper.GetTranslation("showFishSmokerInfo"),
+                tooltip: () => MyHelper.GetTranslation("showFishSmokerInfo"),
+                getValue: () => this.Config.ShowFishSmoker,
+                setValue: value => this.Config.ShowFishSmoker = value
+            );
         }
 
         private List<TerrainFeature>? GetLocationTerrainFeature(string locationName)
@@ -425,6 +432,14 @@ namespace BetterFarmComputer
             {
                 allList.Add($"{MyHelper.GetTranslation("fruitTreeCount")}:{fruitTreeCount}");
                 allList.Add($"{MyHelper.GetTranslation("canHarvestFruitTree")}:{canHarvestFruitTree}");
+            }
+            if(Config==null|| Config.ShowFishSmoker)
+            {
+                var fishSmoker = objsStruct_ALL.GetType(ObjectStructType.FishSmoker) +
+                    buildingStruct_ALL.analyseObjectStruct.GetType(ObjectStructType.FishSmoker);
+                allList.Add($"{MyHelper.GetTranslation("fishSmokerCount")}:{fishSmoker.count}");
+                allList.Add($"{MyHelper.GetTranslation("fishSmokerReadyForHarvestCount")}:{fishSmoker.readyForHarvestCount}");
+                allList.Add($"{MyHelper.GetTranslation("fishSmokerEmptyCount")}:{fishSmoker.emptyCount}");
             }
             strs.Add(allList);
 

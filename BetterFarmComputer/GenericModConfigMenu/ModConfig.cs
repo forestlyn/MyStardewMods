@@ -21,6 +21,7 @@ namespace BetterFarmComputer
         public bool ShowDehydrator { get; set; } = true;
         public bool ShowFruitTree { get; set; } = true;
 
+        public bool ShowFishSmoker { get;set; } = true;
 
     }
 }
