@@ -1,0 +1,10 @@
+{
+  "Name": "ShowRealTime",
+  "Author": "forestlyn",
+  "Version": "1.0.0",
+  "Description": "Show Real Time in Stardew Valley!",
+  "UniqueID": "forestlyn.ShowRealTime",
+  "EntryDll": "ShowRealTime.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": []
+}
