@@ -26,8 +26,8 @@ namespace ShowRealTime
         private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
         {
             InitConfig();
-            timeMenu = new TimeMenu(helper, Config, DialogBoxGreen.Sprite.X, DialogBoxGreen.Sprite.Y,
-DialogBoxGreen.Sprite.Width, DialogBoxGreen.Sprite.Height);
+            timeMenu = new TimeMenu(helper, Config, BoardGameBorder.Sprite.X, BoardGameBorder.Sprite.Y,
+BoardGameBorder.Sprite.Width, BoardGameBorder.Sprite.Height);
         }
 
         private void InitConfig()

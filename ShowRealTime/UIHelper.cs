@@ -13,6 +13,11 @@ namespace ShowRealTime
         public static readonly Rectangle Sprite = new Rectangle(15, 15, 160, 160);
     }
 
+    public static class BoardGameBorder
+    {
+        public static Texture2D Sheet => Game1.content.Load<Texture2D>("LooseSprites\\boardGameBorder");
+        public static readonly Rectangle Sprite = new Rectangle(0, 0, 138, 74);
+    }
 
     public static class UIHelper
     {

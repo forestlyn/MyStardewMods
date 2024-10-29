@@ -9,7 +9,7 @@ namespace ShowRealTime
 {
     public class TimeMenu : IClickableMenu, IDisposable
     {
-        private SpriteFont font;
+        private SpriteFont font = Game1.dialogueFont;
 
         private IModHelper helper;
 
@@ -40,7 +40,7 @@ namespace ShowRealTime
             this.position = new Vector2((float)this.xPositionOnScreen, (float)this.yPositionOnScreen);
             this.width = width;
             this.height = height;
-            font = Game1.smallFont;
+            font = Game1.dialogueFont;
         }
 
         private void OnRenderingHud(object? sender, RenderingHudEventArgs e)
@@ -82,20 +82,23 @@ namespace ShowRealTime
 
         public void Draw(SpriteBatch b)
         {
-            float xScale = 1.5f;
-            float yScale = 1.5f;
+            float xScale = 2f;
+            float yScale = 2f;
             float x = this.xPositionOnScreen;
             float y = this.yPositionOnScreen;
-            const int gutter = 40;
+            const int gutter = 25;
             float leftOffset = gutter;
             float topOffset = gutter;
-            float contentWidth = this.width * xScale - gutter * 2 * xScale;
-            float contentHeight = this.height * yScale - gutter * 2 * yScale;
+            float contentWidth = this.width * xScale - gutter * 2;
+            float contentHeight = this.height * yScale - gutter * 2;
 
             using (SpriteBatch backgroundBatch = new SpriteBatch(Game1.graphics.GraphicsDevice))
             {
-                backgroundBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp);
-                backgroundBatch.Draw(DialogBoxGreen.Sheet, new Vector2(x, y), DialogBoxGreen.Sprite, Color.White, 0, Vector2.Zero, new Vector2(xScale, yScale), SpriteEffects.None, 0);
+                backgroundBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, 
+                    SamplerState.PointClamp);
+                backgroundBatch.Draw(BoardGameBorder.Sheet, new Vector2(x, y), 
+                    BoardGameBorder.Sprite, Color.White, 0, Vector2.Zero, 
+                    new Vector2(xScale, yScale), SpriteEffects.None, 0);
                 backgroundBatch.End();
             }
 
@@ -105,10 +108,13 @@ namespace ShowRealTime
                 Rectangle prevScissorRectangle = device.ScissorRectangle;
                 try
                 {
-                    device.ScissorRectangle = new Rectangle((int)(x + gutter), (int)(y + gutter), (int)contentWidth, (int)contentHeight);
-                    contentBatch.Begin(SpriteSortMode.Deferred, this.ContentBlendState, SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
-                    contentBatch.DrawString(font, config.use_24_hour_Clock ? time24_String : time12_String, new Vector2(x + leftOffset, y + topOffset), Color.Black);
-                    y += leftOffset;
+                    device.ScissorRectangle = new Rectangle((int)(x + gutter), 
+                        (int)(y + gutter), (int)contentWidth, (int)contentHeight);
+                    contentBatch.Begin(SpriteSortMode.Deferred, this.ContentBlendState, 
+                        SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
+                    contentBatch.DrawString(font, config.use_24_hour_Clock ? time24_String : time12_String, 
+                        new Vector2(x + leftOffset, y + topOffset), Color.Black);
+                    y += leftOffset * 2;
                     if (config.showDate)
                         contentBatch.DrawString(font, date, new Vector2(x + leftOffset, y + topOffset), Color.Black);
                     contentBatch.End();
