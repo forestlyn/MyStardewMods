@@ -267,7 +267,6 @@ namespace BetterFarmComputer
                             {
                                 contentBatch.DrawString(font, str, new Vector2(x + leftOffset, y + topOffset), Color.Black);
                                 y += gutter;
-
                             }
                             maxYDelta = Math.Max(maxYDelta, y - yPositionOnScreen);
                             if (CurrentIndex == 0)
@@ -302,6 +301,10 @@ namespace BetterFarmComputer
                 catch (Exception ex)
                 {
                     MyLog.Log(ex.ToString(), LogLevel.Debug);
+                }
+                finally
+                {
+                    device.ScissorRectangle = prevScissorRectangle;
                 }
             }
             this.drawMouse(Game1.spriteBatch);
