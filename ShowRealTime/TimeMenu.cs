@@ -1,9 +1,12 @@
-﻿using Microsoft.Xna.Framework;
+﻿#define DEBUG_MODE
+
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
+
 
 namespace ShowRealTime
 {
@@ -26,20 +29,30 @@ namespace ShowRealTime
         /// </summary>
         private string date = "";
 
-        private Vector2 position;
-
+        /// <summary>
+        /// 配置
+        /// </summary>
         private ModConfig config;
+        /// <summary>
+        /// 使用的图像
+        /// </summary>
+        private MySprite mySprite;
 
-        public TimeMenu(IModHelper modHelper, ModConfig config, int x, int y, int width, int height) : base(x, y, width, height, false)
+        private readonly float TimeInterval = 50f * 60;
+        private readonly float ShowTime = 10f * 60;
+
+        private float showTimer = 0f;
+        private float timeIntervalTimer = 0f;
+        private bool drawClockText = false;
+        public TimeMenu(IModHelper modHelper, ModConfig config, MySprite mySprite) :
+            base(0, 0, mySprite.Sprite.Width, mySprite.Sprite.Height, false)
         {
             helper = modHelper;
             helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
             helper.Events.Display.RenderingHud += OnRenderingHud;
 
+            this.mySprite = mySprite;
             this.config = config;
-            this.position = new Vector2((float)this.xPositionOnScreen, (float)this.yPositionOnScreen);
-            this.width = width;
-            this.height = height;
             font = Game1.dialogueFont;
         }
 
@@ -58,12 +71,50 @@ namespace ShowRealTime
             helper.Events.Display.RenderingHud -= OnRenderingHud;
         }
 
+
+
+
         private void OnUpdateTicked(object? sender, UpdateTickedEventArgs e)
         {
             DateTime now = DateTime.Now;
             time24_String = now.ToString("HH:mm");
             time12_String = now.ToString("hh:mm tt");
             date = now.ToString("yyyy/M/d");
+
+            for (int i = 0; i < config.Clocks.Count; i++)
+            {
+                if (config.Clocks[i].UseClock)
+                {
+                    if (now.Hour == config.Clocks[i].Hour && now.Minute == config.Clocks[i].Minute)
+                    {
+                        DrawClock();
+                    }
+                }
+            }
+        }
+
+        private void DrawClock()
+        {
+            showTimer += 1;
+            if (showTimer < ShowTime)
+            {
+                if(drawClockText == false)
+                {
+                    Game1.playSound("drumkit6", null);
+                    drawClockText = true;
+                }
+            }
+            else
+            {
+                timeIntervalTimer += 1;
+                drawClockText = false;
+                if (timeIntervalTimer > TimeInterval)
+                {
+                    showTimer = 0;
+                    timeIntervalTimer = 0;
+
+                }
+            }
         }
 
         private readonly BlendState ContentBlendState = new()
@@ -82,23 +133,22 @@ namespace ShowRealTime
 
         public void Draw(SpriteBatch b)
         {
-            float xScale = 2f;
-            float yScale = 2f;
+            float scale = 3.5f;
             float x = this.xPositionOnScreen;
             float y = this.yPositionOnScreen;
             const int gutter = 25;
-            float leftOffset = gutter;
-            float topOffset = gutter;
-            float contentWidth = this.width * xScale - gutter * 2;
-            float contentHeight = this.height * yScale - gutter * 2;
+            float leftOffset = 10;
+            float topOffset = 10;
+            float contentWidth = this.width * scale;
+            float contentHeight = this.height * scale;
 
             using (SpriteBatch backgroundBatch = new SpriteBatch(Game1.graphics.GraphicsDevice))
             {
-                backgroundBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, 
+                backgroundBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied,
                     SamplerState.PointClamp);
-                backgroundBatch.Draw(BoardGameBorder.Sheet, new Vector2(x, y), 
-                    BoardGameBorder.Sprite, Color.White, 0, Vector2.Zero, 
-                    new Vector2(xScale, yScale), SpriteEffects.None, 0);
+                backgroundBatch.Draw(mySprite.Sheet, new Vector2(x, y),
+                    mySprite.Sprite, Color.White, 0, Vector2.Zero,
+                    scale, SpriteEffects.None, 0);
                 backgroundBatch.End();
             }
 
@@ -108,16 +158,21 @@ namespace ShowRealTime
                 Rectangle prevScissorRectangle = device.ScissorRectangle;
                 try
                 {
-                    device.ScissorRectangle = new Rectangle((int)(x + gutter), 
-                        (int)(y + gutter), (int)contentWidth, (int)contentHeight);
-                    contentBatch.Begin(SpriteSortMode.Deferred, this.ContentBlendState, 
+                    device.ScissorRectangle = new Rectangle((int)(x),
+                        (int)(y), (int)contentWidth, (int)contentHeight);
+                    contentBatch.Begin(SpriteSortMode.Deferred, this.ContentBlendState,
                         SamplerState.PointClamp, null, new RasterizerState { ScissorTestEnable = true });
-                    contentBatch.DrawString(font, config.use_24_hour_Clock ? time24_String : time12_String, 
-                        new Vector2(x + leftOffset, y + topOffset), Color.Black);
-                    y += leftOffset * 2;
-                    if (config.showDate)
-                        contentBatch.DrawString(font, date, new Vector2(x + leftOffset, y + topOffset), Color.Black);
+                    contentBatch.DrawString(Game1.smallFont, date, new Vector2(x + 15, y + 20), Color.Black);
+                    y += 100;
+                    contentBatch.DrawString(Game1.smallFont, config.use_24_hour_Clock ? time24_String : time12_String,
+                        new Vector2(x + 50, y), Color.Black);
                     contentBatch.End();
+
+                    if (drawClockText)
+                    {
+                        DrawText($"现在已经{time24_String}点啦", 5, Game1.graphics.GraphicsDevice.Viewport.Height - 30);
+                    }
+                    //DrawText($"现在已经{time24_String}点啦", 5, 30);
                 }
                 catch (Exception ex)
                 {
@@ -131,9 +186,9 @@ namespace ShowRealTime
             this.drawMouse(Game1.spriteBatch);
         }
 
-        public override void leftClickHeld(int x, int y)
+        public void DrawText(string text, int x, int y)
         {
-
+            IClickableMenu.drawHoverText(Game1.spriteBatch, text, Game1.dialogueFont, overrideX: x, overrideY: y);
         }
     }
 }

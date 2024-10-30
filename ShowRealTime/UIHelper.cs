@@ -7,18 +7,38 @@ using StardewValley.Menus;
 
 namespace ShowRealTime
 {
-    public static class DialogBoxGreen
+
+    public interface MySprite
     {
-        public static Texture2D Sheet => Game1.content.Load<Texture2D>("LooseSprites\\DialogBoxGreen");
-        public static readonly Rectangle Sprite = new Rectangle(15, 15, 160, 160);
+        public Texture2D Sheet {get;}
+        public Rectangle Sprite { get; }
     }
 
-    public static class BoardGameBorder
+
+    public class DialogBoxGreen : MySprite
     {
-        public static Texture2D Sheet => Game1.content.Load<Texture2D>("LooseSprites\\boardGameBorder");
-        public static readonly Rectangle Sprite = new Rectangle(0, 0, 138, 74);
+        public Texture2D Sheet => Game1.content.Load<Texture2D>("LooseSprites\\DialogBoxGreen");
+        public Rectangle Sprite => new Rectangle(15, 15, 160, 160);
     }
 
+    public class BoardGameBorder: MySprite
+    {
+        public Texture2D Sheet => Game1.content.Load<Texture2D>("LooseSprites\\boardGameBorder");
+        public Rectangle Sprite => new Rectangle(0, 0, 138, 74);
+    }
+
+
+    public class TimeBorder : MySprite
+    {
+        public Texture2D Sheet => Game1.content.Load<Texture2D>("LooseSprites\\Cursors.zh-CN");
+        public Rectangle Sprite => new Rectangle(332, 431, 72, 41);
+    }
+
+    public class TimeBorderWithoutCycle : MySprite
+    {
+        public Texture2D Sheet => Game1.content.Load<Texture2D>("LooseSprites\\Cursors.zh-CN");
+        public Rectangle Sprite => new Rectangle(357, 431, 46, 40);
+    }
     public static class UIHelper
     {
         public static bool IsRenderingNormally()
