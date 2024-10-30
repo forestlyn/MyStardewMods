@@ -2,6 +2,8 @@
 
 ## BetterFarmComputer
 
+[MyStardewMods/BetterFarmComputer/doc/Readme.md at master · forestlyn/MyStardewMods](https://github.com/forestlyn/MyStardewMods/blob/master/BetterFarmComputer/doc/Readme.md)
+
 a better farm computer, you can see your farm infos in everywhere, just tap L
 it shows more infos than farm computer
 and it support GenericModConfigMenu, you can choose show infos
@@ -10,6 +12,9 @@ and it support GenericModConfigMenu, you can choose show infos
 
 ## Show Real Time
 
+[MyStardewMods/ShowRealTime/doc/Readme.md at master · forestlyn/MyStardewMods](https://github.com/forestlyn/MyStardewMods/blob/master/ShowRealTime/doc/Readme.md)
+
 - 显示现实时间
 
 - 闹钟
+
