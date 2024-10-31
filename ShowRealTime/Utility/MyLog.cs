@@ -1,6 +1,6 @@
 ﻿using StardewModdingAPI;
 
-namespace ShowRealTime
+namespace Utility
 {
     internal static class MyLog
     {

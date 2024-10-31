@@ -6,6 +6,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
+using Utility;
 
 
 namespace ShowRealTime
@@ -170,9 +171,9 @@ namespace ShowRealTime
 
                     if (drawClockText)
                     {
-                        DrawText($"现在已经{time24_String}点啦", 5, Game1.graphics.GraphicsDevice.Viewport.Height - 30);
+                        DrawText(MyHelper.GetTranslation("TimeReminder").Replace("{time}", time24_String), 5, Game1.graphics.GraphicsDevice.Viewport.Height - 30);
                     }
-                    //DrawText($"现在已经{time24_String}点啦", 5, 30);
+                    //DrawText(MyHelper.GetTranslation("TimeReminder").Replace("{time}", time24_String), 5, Game1.graphics.GraphicsDevice.Viewport.Height - 30);
                 }
                 catch (Exception ex)
                 {

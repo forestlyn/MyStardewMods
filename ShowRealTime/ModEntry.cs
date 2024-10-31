@@ -1,6 +1,7 @@
 ﻿using GenericModConfigMenu;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using Utility;
 
 namespace ShowRealTime
 {
@@ -15,6 +16,7 @@ namespace ShowRealTime
             this.helper = helper;
             this.Config = this.Helper.ReadConfig<ModConfig>();
 
+            MyHelper.SetHelper(helper);
             MyLog.Monitor = this.Monitor;
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
         }
@@ -45,7 +47,7 @@ namespace ShowRealTime
             // add options
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => "Use 24 - hour clock",
+                name: () => MyHelper.GetTranslation("Use24-HourClock"),
                 tooltip: () => "If enabled, the clock will use a 24-hour format (e.g. 14:30). " +
                        "If disabled, it will use a 12-hour format with AM/PM (e.g. 2:30 PM).",
                 getValue: () => this.Config.use_24_hour_Clock,
@@ -67,7 +69,7 @@ namespace ShowRealTime
                 int index = i;
                 configMenu.AddBoolOption(
                     mod: this.ModManifest,
-                    name: () => $"Use Clock {index + 1}",
+                    name: () => MyHelper.GetTranslation("ClockEnable").Replace("{index}",(index+1).ToString()),
                     tooltip: () => $"If enabled, the clock will remind you at the time you set.",
                     getValue: () => this.Config.Clocks[index].UseClock,
                     setValue: value =>
@@ -78,7 +80,7 @@ namespace ShowRealTime
 
                 configMenu.AddNumberOption(
                     mod: this.ModManifest,
-                    name: () => $"Hour {index + 1}",
+                    name: () => MyHelper.GetTranslation("Hour"),
                     getValue: () => this.Config.Clocks[index].Hour,
                     setValue: value =>
                     {
@@ -91,7 +93,7 @@ namespace ShowRealTime
 
                 configMenu.AddNumberOption(
                     mod: this.ModManifest,
-                    name: () => $"Minute {index + 1}",
+                    name: () => MyHelper.GetTranslation("Minute"),
                     getValue: () => this.Config.Clocks[index].Minute,
                     setValue: value =>
                     {

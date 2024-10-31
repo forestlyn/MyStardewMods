@@ -5,7 +5,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 
-namespace ShowRealTime
+namespace Utility
 {
 
     public interface MySprite

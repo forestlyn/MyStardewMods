@@ -1,0 +1,7 @@
+{
+    "TimeReminder": "It's already {time} now",
+    "Use24-HourClock": "24-hour Clock",
+    "ClockEnable": "Clock{index} Enable",
+    "Hour": "Hour",
+    "Minute": "Minute"
+}

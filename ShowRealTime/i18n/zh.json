@@ -1,0 +1,7 @@
+{
+    "TimeReminder": "现在已经{time}啦",
+    "Use24-HourClock": "24小时制",
+    "ClockEnable": "闹钟{index}启用",
+    "Hour": "时",
+    "Minute": "分"
+}
