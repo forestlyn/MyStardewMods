@@ -15,6 +15,7 @@ namespace ShowRealTime
         private ModConfig Config { get; set; }
 
         public event IsInMineEventHandler IsInMineEvent;
+
         public override void Entry(IModHelper helper)
         {
             this.helper = helper;
@@ -22,12 +23,14 @@ namespace ShowRealTime
 
             MyHelper.SetHelper(helper);
             MyLog.Monitor = this.Monitor;
+
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
-            helper.Events.Player.Warped += OnWarped;
+            helper.Events.Player.Warped += this.OnWarped;
         }
 
         private void OnWarped(object? sender, WarpedEventArgs e)
         {
+            //MyLog.Log($"Enter {e.NewLocation.Name}", LogLevel.Debug);
             if(e.IsLocalPlayer && CheckIsMine(e.NewLocation))
             {
                 IsInMineEvent?.Invoke(true);
@@ -40,7 +43,7 @@ namespace ShowRealTime
 
         private bool CheckIsMine(GameLocation location)
         {
-            if (location.Name == "Mine"||location.Name == "SkullCave")
+            if (location.Name.Contains("UndergroundMine"))
             {
                 return true;
             }
