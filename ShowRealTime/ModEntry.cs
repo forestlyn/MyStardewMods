@@ -1,7 +1,9 @@
 ﻿using GenericModConfigMenu;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewValley;
 using Utility;
+using xTile.Dimensions;
 
 namespace ShowRealTime
 {
@@ -11,6 +13,8 @@ namespace ShowRealTime
         private IModHelper helper;
 
         private ModConfig Config { get; set; }
+
+        public event IsInMineEventHandler IsInMineEvent;
         public override void Entry(IModHelper helper)
         {
             this.helper = helper;
@@ -19,14 +23,41 @@ namespace ShowRealTime
             MyHelper.SetHelper(helper);
             MyLog.Monitor = this.Monitor;
             helper.Events.GameLoop.GameLaunched += this.OnGameLaunched;
+            helper.Events.Player.Warped += OnWarped;
+        }
+
+        private void OnWarped(object? sender, WarpedEventArgs e)
+        {
+            if(e.IsLocalPlayer && CheckIsMine(e.NewLocation))
+            {
+                IsInMineEvent?.Invoke(true);
+            }
+            else
+            {
+                IsInMineEvent?.Invoke(false);
+            }
+        }
+
+        private bool CheckIsMine(GameLocation location)
+        {
+            if (location.Name == "Mine"||location.Name == "SkullCave")
+            {
+                return true;
+            }
+            return false;
         }
 
         private void OnGameLaunched(object? sender, GameLaunchedEventArgs e)
         {
             InitConfig();
             timeMenu = new TimeMenu(helper, Config, new TimeBorderWithoutCycle());
+            IsInMineEvent += timeMenu.IsInMine;
         }
 
+
+
+
+        #region ModConfig
         private void InitConfig()
         {
             var configMenu = this.Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
@@ -117,5 +148,6 @@ namespace ShowRealTime
             //);
 
         }
+        #endregion
     }
 }

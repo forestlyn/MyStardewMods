@@ -1,7 +1,7 @@
 {
   "Name": "Show Real Time",
   "Author": "forestlyn",
-  "Version": "1.0.0",
+  "Version": "1.0.2",
   "Description": "Show Real Time in Stardew Valley!",
   "UniqueID": "forestlyn.ShowRealTime",
   "EntryDll": "ShowRealTime.dll",

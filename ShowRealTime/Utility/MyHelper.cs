@@ -1,9 +1,5 @@
 ﻿using StardewModdingAPI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StardewValley;
 
 namespace Utility
 {
@@ -21,5 +17,13 @@ namespace Utility
                 return "ModHelper is null!";
             return ModHelper.Translation.Get(key).Default("缺失翻译！");
         }
+
+
+        public static string GetLocationName()
+        {
+            return Game1.currentLocation.Name;
+        }
+
+        
     }
 }

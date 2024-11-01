@@ -45,6 +45,8 @@ namespace ShowRealTime
         private float showTimer = 0f;
         private float timeIntervalTimer = 0f;
         private bool drawClockText = false;
+
+        private bool isInMine;
         public TimeMenu(IModHelper modHelper, ModConfig config, MySprite mySprite) :
             base(0, 0, mySprite.Sprite.Width, mySprite.Sprite.Height, false)
         {
@@ -143,6 +145,12 @@ namespace ShowRealTime
             float contentWidth = this.width * scale;
             float contentHeight = this.height * scale;
 
+
+            if (isInMine)
+            {
+                y += 100;
+            }
+
             using (SpriteBatch backgroundBatch = new SpriteBatch(Game1.graphics.GraphicsDevice))
             {
                 backgroundBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied,
@@ -190,6 +198,11 @@ namespace ShowRealTime
         public void DrawText(string text, int x, int y)
         {
             IClickableMenu.drawHoverText(Game1.spriteBatch, text, Game1.dialogueFont, overrideX: x, overrideY: y);
+        }
+
+        internal void IsInMine(bool isInMine)
+        {
+            isInMine = true;
         }
     }
 }
