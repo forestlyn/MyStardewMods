@@ -1,9 +1,9 @@
 ﻿using GenericModConfigMenu;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using Utility;
-using xTile.Dimensions;
 
 namespace ShowRealTime
 {
@@ -15,6 +15,8 @@ namespace ShowRealTime
         private ModConfig Config { get; set; }
 
         public event IsInMineEventHandler IsInMineEvent;
+
+        private Point _size;
 
         public override void Entry(IModHelper helper)
         {
@@ -31,7 +33,7 @@ namespace ShowRealTime
         private void OnWarped(object? sender, WarpedEventArgs e)
         {
             //MyLog.Log($"Enter {e.NewLocation.Name}", LogLevel.Debug);
-            if(e.IsLocalPlayer && CheckIsMine(e.NewLocation))
+            if (e.IsLocalPlayer && CheckIsMine(e.NewLocation))
             {
                 IsInMineEvent?.Invoke(true);
             }
@@ -56,9 +58,7 @@ namespace ShowRealTime
             timeMenu = new TimeMenu(helper, Config, new TimeBorderWithoutCycle());
             IsInMineEvent += timeMenu.IsInMine;
         }
-
-
-
+        
 
         #region ModConfig
         private void InitConfig()
@@ -77,7 +77,7 @@ namespace ShowRealTime
                 reset: () => this.Config = new ModConfig(),
                 save: () => this.Helper.WriteConfig(this.Config)
             );
-
+            
             // add options
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
@@ -103,7 +103,7 @@ namespace ShowRealTime
                 int index = i;
                 configMenu.AddBoolOption(
                     mod: this.ModManifest,
-                    name: () => MyHelper.GetTranslation("ClockEnable").Replace("{index}",(index+1).ToString()),
+                    name: () => MyHelper.GetTranslation("ClockEnable").Replace("{index}", (index + 1).ToString()),
                     tooltip: () => $"If enabled, the clock will remind you at the time you set.",
                     getValue: () => this.Config.Clocks[index].UseClock,
                     setValue: value =>
@@ -118,7 +118,7 @@ namespace ShowRealTime
                     getValue: () => this.Config.Clocks[index].Hour,
                     setValue: value =>
                     {
-                        this.Config.Clocks[index].Hour= value;
+                        this.Config.Clocks[index].Hour = value;
                     },
                     min: 0,
                     max: 23,
@@ -138,6 +138,42 @@ namespace ShowRealTime
                     interval: 1
                 );
             }
+
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => MyHelper.GetTranslation("SetUIPosition"),
+                tooltip: () => "If enabled, you can set the start position of the clock ui.",
+                getValue: () => this.Config.SetUIPosition,
+                setValue: value =>
+                {
+                    this.Config.SetUIPosition = value;
+                }
+            );
+
+            _size = UIHelper.GetGraphicSize();
+
+            configMenu.AddNumberOption(
+                mod: this.ModManifest,
+                name: () => "X",
+                getValue: () => this.Config.PositionX,
+                setValue: value =>
+                {
+                    this.Config.PositionX = value;
+                },
+                min: 0,
+                max: _size.X,
+                interval: 10
+            );
+
+            configMenu.AddNumberOption(
+                mod: this.ModManifest,
+                name: () => "Y",
+                getValue: () => this.Config.PositionY,
+                setValue: value => { this.Config.PositionY = value; },
+                min: 0,
+                max: _size.Y,
+                interval: 10
+            );
 
             //configMenu.AddBoolOption(
             //    mod: this.ModManifest,

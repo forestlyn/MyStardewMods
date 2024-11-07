@@ -3,5 +3,6 @@
     "Use24-HourClock": "24-hour Clock",
     "ClockEnable": "Clock{index} Enable",
     "Hour": "Hour",
-    "Minute": "Minute"
+    "Minute": "Minute",
+    "SetUIPosition": "Set UI Position By Yourself"
 }

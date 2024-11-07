@@ -12,6 +12,10 @@ namespace ShowRealTime
         public int ClockNum { get; set; } = 3;
 
         public List<Clock> Clocks { get; set; } = new List<Clock>();
+
+        public bool SetUIPosition { get; set; } = false;
+        public int PositionX { get; set; } = 0;
+        public int PositionY { get; set; } = 0;
     }
 
     public class Clock

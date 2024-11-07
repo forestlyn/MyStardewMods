@@ -66,6 +66,10 @@ namespace GenericModConfigMenu
         /// <param name="fieldId">The unique field ID for use with <see cref="OnFieldChanged"/>, or <c>null</c> to auto-generate a randomized ID.</param>
         void AddTextOption(IManifest mod, Func<string> getValue, Action<string> setValue, Func<string> name, Func<string> tooltip = null, string[] allowedValues = null, Func<string, string> formatAllowedValue = null, string fieldId = null);
 
+        /// <summary>Open the config UI for a specific mod.</summary>
+        /// <param name="mod">The mod's manifest.</param>
+        void OpenModMenu(IManifest mod);
+        
         /// <summary>Remove a mod from the config UI and delete all its options and pages.</summary>
         /// <param name="mod">The mod's manifest.</param>
         void Unregister(IManifest mod);

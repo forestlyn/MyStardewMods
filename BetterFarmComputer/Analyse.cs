@@ -11,7 +11,7 @@ namespace BetterFarmComputer
 {
     public class Analyse
     {
-        public ObjectStructType GetObjectStructType(string itemid, out bool useEmpty, out bool useReadyForHaverst)
+        private ObjectStructType GetObjectStructType(string itemid, out bool useEmpty, out bool useReadyForHaverst)
         {
             switch (itemid)
             {

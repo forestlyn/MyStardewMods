@@ -149,7 +149,6 @@ namespace ShowRealTime
             if (isInMine)
             {
                 y += 100;
-                //MyLog.Log("y add :" + y);
             }
 
             using (SpriteBatch backgroundBatch = new SpriteBatch(Game1.graphics.GraphicsDevice))

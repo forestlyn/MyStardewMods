@@ -3,5 +3,6 @@
     "Use24-HourClock": "24小时制",
     "ClockEnable": "闹钟{index}启用",
     "Hour": "时",
-    "Minute": "分"
+    "Minute": "分",
+    "SetUIPosition": "自行设置UI起始位置"
 }

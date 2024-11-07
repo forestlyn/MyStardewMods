@@ -55,6 +55,11 @@ namespace Utility
 
             return conditions.All(condition => condition);
         }
+
+        public static Point GetGraphicSize()
+        {
+            return Game1.graphics.GraphicsDevice.Viewport.Bounds.Size;
+        }
     }
 
 }
