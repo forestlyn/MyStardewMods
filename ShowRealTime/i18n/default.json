@@ -4,5 +4,6 @@
     "ClockEnable": "Clock{index} Enable",
     "Hour": "Hour",
     "Minute": "Minute",
-    "SetUIPosition": "Set UI Position By Yourself"
+    "SetUIPosition": "Set UI Position By Yourself",
+    "SetUIPositionNotice": "If enabled, you can set the start position(top left corner) of the clock ui. The UI width is 92,height is 80."
 }

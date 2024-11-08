@@ -4,5 +4,6 @@
     "ClockEnable": "闹钟{index}启用",
     "Hour": "时",
     "Minute": "分",
-    "SetUIPosition": "自行设置UI起始位置"
+    "SetUIPosition": "自行设置UI起始位置",
+    "SetUIPositionNotice": "启用后UI将在你设置的位置，设置点是左上角，UI宽92，高80."
 }

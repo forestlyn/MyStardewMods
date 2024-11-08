@@ -142,7 +142,7 @@ namespace ShowRealTime
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
                 name: () => MyHelper.GetTranslation("SetUIPosition"),
-                tooltip: () => "If enabled, you can set the start position of the clock ui.",
+                tooltip: () => MyHelper.GetTranslation("SetUIPositionNotice"),
                 getValue: () => this.Config.SetUIPosition,
                 setValue: value =>
                 {
@@ -161,7 +161,6 @@ namespace ShowRealTime
                     this.Config.PositionX = value;
                 },
                 min: 0,
-                max: _size.X,
                 interval: 10
             );
 
@@ -171,7 +170,6 @@ namespace ShowRealTime
                 getValue: () => this.Config.PositionY,
                 setValue: value => { this.Config.PositionY = value; },
                 min: 0,
-                max: _size.Y,
                 interval: 10
             );
 
