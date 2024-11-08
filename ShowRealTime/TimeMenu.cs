@@ -145,8 +145,13 @@ namespace ShowRealTime
             float contentWidth = this.width * scale;
             float contentHeight = this.height * scale;
 
+            if (config.SetUIPosition)
+            {
+                x = config.PositionX;
+                y = config.PositionY;
+            }
 
-            if (isInMine)
+            if (!config.SetUIPosition&&isInMine)
             {
                 y += 100;
             }
