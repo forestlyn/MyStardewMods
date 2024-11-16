@@ -147,8 +147,8 @@ namespace BetterFarmComputer
             }
         }
 
-        private void AnalyseTerrainFeature(TerrainFeature terrainFeature, out bool isHoeDirt, out bool hasCrop, 
-            out bool readyForHarvest, out bool needsWatering,out int fruitCount,out int fruitTreeCount)
+        private void AnalyseTerrainFeature(TerrainFeature terrainFeature, out bool isHoeDirt, out bool hasCrop,
+            out bool readyForHarvest, out bool needsWatering, out int fruitCount, out int fruitTreeCount)
         {
             isHoeDirt = false;
             readyForHarvest = false;
@@ -181,16 +181,46 @@ namespace BetterFarmComputer
                     MyLog.Log($"{ex}", LogLevel.Debug);
                 }
             }
-            if(terrainFeature is FruitTree)
+            if (terrainFeature is FruitTree)
             {
                 FruitTree tree = (FruitTree)terrainFeature;
                 fruitCount = tree.fruit.Count;
                 fruitTreeCount = 1;
             }
         }
-        public void AnalyseTerrainFeatureList(List<TerrainFeature>? terrainFeatureList, out int hoeDirtCount, 
+
+        public void AnalyseOtherFarmTerrainFeatureList(out int hoeDirtCount,
             out int cropCount, out int readyForHarvestCount, out int needsWateringCount,
-            out int canHarvestFruitTree,out int fruitTreeCount)
+            out int canHarvestFruitTree, out int fruitTreeCount)
+        {
+            hoeDirtCount = 0;
+            cropCount = 0;
+            readyForHarvestCount = 0;
+            needsWateringCount = 0;
+            canHarvestFruitTree = 0;
+            fruitTreeCount = 0;
+            foreach (var location in Game1.locations)
+            {
+                if (location.Name.Equals("Farm", StringComparison.OrdinalIgnoreCase) ||
+                    location.Name.Equals("Greenhouse", StringComparison.OrdinalIgnoreCase) ||
+                    location.Name.Equals("IslandWest", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                AnalyseTerrainFeatureList(GetLocationTerrainFeature(location), out int hoeDirtCount_temp, out int cropCount_temp, out int readyForHarvestCount_temp, out int needsWateringCount_temp, out int canHarvestFruitTree_temp, out int fruitTreeCount_temp);
+                hoeDirtCount += hoeDirtCount_temp;
+                cropCount += cropCount_temp;
+                readyForHarvestCount += readyForHarvestCount_temp;
+                needsWateringCount += needsWateringCount_temp;
+                canHarvestFruitTree += canHarvestFruitTree_temp;
+                fruitTreeCount += fruitTreeCount_temp;
+            }
+        }
+
+
+        public void AnalyseTerrainFeatureList(List<TerrainFeature>? terrainFeatureList, out int hoeDirtCount,
+            out int cropCount, out int readyForHarvestCount, out int needsWateringCount,
+            out int canHarvestFruitTree, out int fruitTreeCount)
         {
             hoeDirtCount = 0;
             cropCount = 0;
@@ -204,8 +234,8 @@ namespace BetterFarmComputer
             }
             foreach (var terrain in terrainFeatureList)
             {
-                AnalyseTerrainFeature(terrain, out bool isHoeDirt, out bool hasCrop, 
-                    out bool readyForHarvest, out bool needsWatering, 
+                AnalyseTerrainFeature(terrain, out bool isHoeDirt, out bool hasCrop,
+                    out bool readyForHarvest, out bool needsWatering,
                     out int fruitCount, out int _fruitTreeCount);
                 if (isHoeDirt)
                 {
@@ -223,7 +253,7 @@ namespace BetterFarmComputer
                 {
                     needsWateringCount++;
                 }
-                if(fruitCount > 0)
+                if (fruitCount > 0)
                 {
                     canHarvestFruitTree++;
                 }
@@ -231,5 +261,87 @@ namespace BetterFarmComputer
             }
         }
 
+
+        public List<TerrainFeature>? GetLocationTerrainFeature(string locationName)
+        {
+            if (Context.IsWorldReady)
+            {
+                return GetLocationTerrainFeature(Game1.getLocationFromName(locationName));
+            }
+            return null;
+        }
+
+        public List<TerrainFeature>? GetLocationTerrainFeature(GameLocation location)
+        {
+            if (Context.IsWorldReady)
+            {
+                if (location != null)
+                {
+                    List<TerrainFeature> terrainFeatureList = new List<TerrainFeature>();
+                    NetVector2Dictionary<TerrainFeature, NetRef<TerrainFeature>> temp = location.terrainFeatures;
+                    foreach (var terrainFeature in temp)
+                    {
+                        foreach (var terrain in terrainFeature)
+                        {
+                            terrainFeatureList.Add(terrain.Value);
+                        }
+                    }
+                    return terrainFeatureList;
+                }
+            }
+            return null;
+        }
+
+        public List<Building>? GetLocationBuildingList(string locationName)
+        {
+            if (Context.IsWorldReady)
+            {
+                return GetLocationBuildingList(Game1.getLocationFromName(locationName));
+            }
+            return null;
+        }
+        public List<Building>? GetLocationBuildingList(GameLocation location)
+        {
+            if (Context.IsWorldReady)
+            {
+                if (location != null)
+                {
+                    List<Building> buildingList = new List<Building>();
+                    NetCollection<Building> temp = location.buildings;
+                    foreach (var building in temp)
+                    {
+                        buildingList.Add(building);
+                    }
+                    return buildingList;
+                }
+            }
+            return null;
+        }
+
+        public List<Object>? GetLocationObjectList(string locationName)
+        {
+            if (Context.IsWorldReady)
+            {
+                return GetLocationObjectList(Game1.getLocationFromName(locationName));
+            }
+            return null;
+        }
+        public List<Object>? GetLocationObjectList(GameLocation location)
+        {
+            if (Context.IsWorldReady)
+            {
+                if (location != null)
+                {
+                    List<Object> objectList = new List<Object>();
+                    OverlaidDictionary temp = location.objects;
+                    foreach (var obj in temp.Values)
+                    {
+                        objectList.Add(obj);
+                    }
+                    return objectList;
+                }
+            }
+            return null;
+        }
     }
 }

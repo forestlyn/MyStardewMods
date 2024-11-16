@@ -90,7 +90,7 @@ namespace BetterFarmComputer
             );
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
-                name: () => MyHelper.GetTranslation("showFarmInfo"),
+                name: () => MyHelper.GetTranslation("showGreenHouseInfo"),
                 tooltip: () => MyHelper.GetTranslation("showGreenHouseInfo"),
                 getValue: () => this.Config.ShowGreenHouse,
                 setValue: value => this.Config.ShowGreenHouse = value
@@ -101,6 +101,13 @@ namespace BetterFarmComputer
                 tooltip: () => MyHelper.GetTranslation("showGingerIslandInfo"),
                 getValue: () => this.Config.ShowIslandWest,
                 setValue: value => this.Config.ShowIslandWest = value
+            );
+            configMenu.AddBoolOption(
+                mod: this.ModManifest,
+                name: () => MyHelper.GetTranslation("showOtherFarmInfo"),
+                tooltip: () => MyHelper.GetTranslation("showOtherFarmInfo"),
+                getValue: () => this.Config.ShowOtherPlaceFarm,
+                setValue: value => this.Config.ShowOtherPlaceFarm = value
             );
             configMenu.AddBoolOption(
                 mod: this.ModManifest,
@@ -178,87 +185,7 @@ namespace BetterFarmComputer
             );
         }
 
-        private List<TerrainFeature>? GetLocationTerrainFeature(string locationName)
-        {
-            if (Context.IsWorldReady)
-            {
-                return GetLocationTerrainFeature(Game1.getLocationFromName(locationName));
-            }
-            return null;
-        }
-
-        private List<TerrainFeature>? GetLocationTerrainFeature(GameLocation location)
-        {
-            if (Context.IsWorldReady)
-            {
-                if (location != null)
-                {
-                    List<TerrainFeature> terrainFeatureList = new List<TerrainFeature>();
-                    NetVector2Dictionary<TerrainFeature, NetRef<TerrainFeature>> temp = location.terrainFeatures;
-                    foreach (var terrainFeature in temp)
-                    {
-                        foreach (var terrain in terrainFeature)
-                        {
-                            terrainFeatureList.Add(terrain.Value);
-                        }
-                    }
-                    return terrainFeatureList;
-                }
-            }
-            return null;
-        }
-
-        private List<Building>? GetLocationBuildingList(string locationName)
-        {
-            if (Context.IsWorldReady)
-            {
-                return GetLocationBuildingList(Game1.getLocationFromName(locationName));
-            }
-            return null;
-        }
-        private List<Building>? GetLocationBuildingList(GameLocation location)
-        {
-            if (Context.IsWorldReady)
-            {
-                if (location != null)
-                {
-                    List<Building> buildingList = new List<Building>();
-                    NetCollection<Building> temp = location.buildings;
-                    foreach (var building in temp)
-                    {
-                        buildingList.Add(building);
-                    }
-                    return buildingList;
-                }
-            }
-            return null;
-        }
-
-        private List<Object>? GetLocationObjectList(string locationName)
-        {
-            if (Context.IsWorldReady)
-            {
-                return GetLocationObjectList(Game1.getLocationFromName(locationName));
-            }
-            return null;
-        }
-        private List<Object>? GetLocationObjectList(GameLocation location)
-        {
-            if (Context.IsWorldReady)
-            {
-                if (location != null)
-                {
-                    List<Object> objectList = new List<Object>();
-                    OverlaidDictionary temp = location.objects;
-                    foreach (var obj in temp.Values)
-                    {
-                        objectList.Add(obj);
-                    }
-                    return objectList;
-                }
-            }
-            return null;
-        }
+        
         //private void OnDisplayMenuChanged(object? sender, MenuChangedEventArgs e)
         //{
         //    if (e.NewMenu != null)
@@ -291,12 +218,12 @@ namespace BetterFarmComputer
             var strs = new List<List<string>>();
 
             if (Config != null && !Config.ShowFarm)
-                goto GreenHouse;
+                goto OtherPlaceFarm;
             //Farm
-            Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("Farm"), out int hoeDirtCount_Farm, out int cropCount_Farm, out int readyForHarvestCount_Farm, out int needsWateringCount_Farm, out var _, out var _);
-            Analyse.AnalyseBuildingList(GetLocationBuildingList("Farm"), out var buildingStruct_Farm);
+            Analyse.AnalyseTerrainFeatureList(Analyse.GetLocationTerrainFeature("Farm"), out int hoeDirtCount_Farm, out int cropCount_Farm, out int readyForHarvestCount_Farm, out int needsWateringCount_Farm, out var _, out var _);
+            Analyse.AnalyseBuildingList(Analyse.GetLocationBuildingList("Farm"), out var buildingStruct_Farm);
             Analyse.GetPiecesOfHay(out int hayCount);
-            Analyse.AnalyseObjectsList(GetLocationObjectList("Farm"), out AnalyseObjectStruct objStruct_Farm);
+            Analyse.AnalyseObjectsList(Analyse.GetLocationObjectList("Farm"), out AnalyseObjectStruct objStruct_Farm);
             var farmlist = new List<string>
             {
                 $"{Game1.player.Name} {MyHelper.GetTranslation("farmReport")}:",
@@ -310,11 +237,33 @@ namespace BetterFarmComputer
             };
             strs.Add(farmlist);
 
+        OtherPlaceFarm:
+            if(Config != null && !Config.ShowOtherPlaceFarm)
+                goto GreenHouse;
+            Analyse.AnalyseOtherFarmTerrainFeatureList(out int hoeDirtCount_other,out int cropCount_other, 
+                out int readyForHarvestCount_other,out int needsWateringCount_other,out var _,out var _);
+            var otherPlaceFarmList = new List<string>
+            {
+          
+                $"{Game1.player.Name} {MyHelper.GetTranslation("otherPlaceFarmReport")}:",
+                $"--------------",
+                $"{MyHelper.GetTranslation("cropCount")}:{cropCount_other}",
+                $"{MyHelper.GetTranslation("readyForHarvestCount")}:{readyForHarvestCount_other}",
+                $"{MyHelper.GetTranslation("needsWateringCount")}:{needsWateringCount_other}",
+                $"{MyHelper.GetTranslation("hoeDirtCount")}:{hoeDirtCount_other - cropCount_other}"
+            };
+            if (strs.Count() != 0)
+            {
+                strs[0].Add("");
+                foreach (var str in otherPlaceFarmList)
+                    strs[0].Add(str);
+            }
+
         GreenHouse:
             if (Config != null && !Config.ShowGreenHouse)
                 goto IslandWest;
             //Greenhouse
-            Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("GreenHouse"), out int hoeDirtCount_GreenHouse, out int cropCount_GreenHouse, out int readyForHarvestCount_GreenHouse, out int needsWateringCount_GreenHouse, out var _, out var _);
+            Analyse.AnalyseTerrainFeatureList(Analyse.GetLocationTerrainFeature("GreenHouse"), out int hoeDirtCount_GreenHouse, out int cropCount_GreenHouse, out int readyForHarvestCount_GreenHouse, out int needsWateringCount_GreenHouse, out var _, out var _);
             var greenhouseList = new List<string>
             {
                 $"{Game1.player.Name} {MyHelper.GetTranslation("greenHouseReport")}:",
@@ -330,7 +279,7 @@ namespace BetterFarmComputer
             if (Config != null && !Config.ShowIslandWest)
                 goto Other;
             //IslandWest
-            Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature("IslandWest"), out int hoeDirtCount_IslandWest, out int cropCount_IslandWest, out int readyForHarvestCount_IslandWest, out int needsWateringCount_IslandWest, out var _, out var _);
+            Analyse.AnalyseTerrainFeatureList(Analyse.GetLocationTerrainFeature("IslandWest"), out int hoeDirtCount_IslandWest, out int cropCount_IslandWest, out int readyForHarvestCount_IslandWest, out int needsWateringCount_IslandWest, out var _, out var _);
             var islandWestList = new List<string>
             {
                 $"{Game1.player.Name} {MyHelper.GetTranslation("gingerIslandReport")}:",
@@ -350,7 +299,7 @@ namespace BetterFarmComputer
             AnalyseBuildingStruct buildingStruct_ALL = new AnalyseBuildingStruct();
             AnalyseObjectStruct objsStruct_ALL = new AnalyseObjectStruct();
 
-            Analyse.AnalyseObjectsList(GetLocationObjectList("Cellar"), out var objs_Cellar);
+            Analyse.AnalyseObjectsList(Analyse.GetLocationObjectList("Cellar"), out var objs_Cellar);
 
             int canHarvestFruitTree = 0;
             int fruitTreeCount = 0;
@@ -359,9 +308,9 @@ namespace BetterFarmComputer
             {
                 if (location != null)
                 {
-                    Analyse.AnalyseObjectsList(GetLocationObjectList(location), out var tempobj);
-                    Analyse.AnalyseBuildingList(GetLocationBuildingList(location), out var tempbuilds);
-                    Analyse.AnalyseTerrainFeatureList(GetLocationTerrainFeature(location), out var _, out var _, out var _, out var _, out var _canHarvestFruitTree, out var _fruitTreeCount);
+                    Analyse.AnalyseObjectsList(Analyse.GetLocationObjectList(location), out var tempobj);
+                    Analyse.AnalyseBuildingList(Analyse.GetLocationBuildingList(location), out var tempbuilds);
+                    Analyse.AnalyseTerrainFeatureList(Analyse.GetLocationTerrainFeature(location), out var _, out var _, out var _, out var _, out var _canHarvestFruitTree, out var _fruitTreeCount);
                     objsStruct_ALL.Add(tempobj);
                     buildingStruct_ALL.Add(tempbuilds);
                     canHarvestFruitTree += _canHarvestFruitTree;

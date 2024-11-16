@@ -22,6 +22,6 @@ namespace BetterFarmComputer
         public bool ShowFruitTree { get; set; } = true;
 
         public bool ShowFishSmoker { get;set; } = true;
-
+        public bool ShowOtherPlaceFarm { get; set; } = true;
     }
 }

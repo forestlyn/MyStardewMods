@@ -12,8 +12,12 @@ and it support GenericModConfigMenu, you can choose show infos
 
 1.2.1：增加熏鱼机
 
-![ce206aef2bd2d1e96d1a084b5a904b9b](https://cdn.jsdelivr.net/gh/forestlyn/Drawing-bed/blog/ce206aef2bd2d1e96d1a084b5a904b9b.png)
+1.3.0：新增其他地点农作物计算
 
-![3fd655daeb36ead3de0fd45100c7f480](https://cdn.jsdelivr.net/gh/forestlyn/Drawing-bed/blog/3fd655daeb36ead3de0fd45100c7f480.png)
+![img](https://cdn.jsdelivr.net/gh/forestlyn/Drawing-bed/blog/5aade15bcaba76389a974141b8194bca.png)
+
+
 
 ![img](https://cdn.jsdelivr.net/gh/forestlyn/Drawing-bed/blog/626fdb51a49dc768596120b54cf89933.png)
+
+![img](https://cdn.jsdelivr.net/gh/forestlyn/Drawing-bed/blog/281fa1922bae1ad77497d796b4567da2.png)
