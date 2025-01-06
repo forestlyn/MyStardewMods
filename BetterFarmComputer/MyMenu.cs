@@ -39,7 +39,7 @@ namespace BetterFarmComputer
 
     public class MyMenu : IClickableMenu
     {
-        private SpriteFont font = Game1.smallFont;
+        private SpriteFont smallFont = Game1.smallFont;
 
         private List<List<string>>? contentList;
 
@@ -61,7 +61,7 @@ namespace BetterFarmComputer
         private ModEntry modEntry;
         public int CurrentIndex
         {
-            get=> modEntry.CurrentMenuIdx;
+            get => modEntry.CurrentMenuIdx;
             set => modEntry.CurrentMenuIdx = value;
         }
         public static int IndexCount = ModEntry.MenuIdxCount;
@@ -96,8 +96,8 @@ namespace BetterFarmComputer
 
             this.ScrollUpButton.bounds = new Rectangle((int)(x + contentWidth), (int)(y + contentHeight - Icons.UpArrow.Height - gutter - Icons.DownArrow.Height), Icons.UpArrow.Height, Icons.UpArrow.Width);
             this.ScrollDownButton.bounds = new Rectangle((int)(x + contentWidth), (int)(y + contentHeight - Icons.DownArrow.Height), Icons.DownArrow.Height, Icons.DownArrow.Width);
-            this.LeftButton.bounds = new Rectangle((int)(x+contentWidth), (int)(y + Icons.LeftArrow.Height + gutter), Icons.LeftArrow.Height, Icons.LeftArrow.Width);
-            this.RigthButton.bounds = new Rectangle((int)(x + contentWidth), (int)(y + Icons.DownArrow.Height + gutter*5), Icons.RightArrow.Height, Icons.RightArrow.Width);
+            this.LeftButton.bounds = new Rectangle((int)(x + contentWidth), (int)(y + Icons.LeftArrow.Height + gutter), Icons.LeftArrow.Height, Icons.LeftArrow.Width);
+            this.RigthButton.bounds = new Rectangle((int)(x + contentWidth), (int)(y + Icons.DownArrow.Height + gutter * 5), Icons.RightArrow.Height, Icons.RightArrow.Width);
 
         }
 
@@ -142,7 +142,7 @@ namespace BetterFarmComputer
             else if (this.ScrollDownButton.containsPoint(x, y))
                 this.ScrollDown();
 
-            else if(this.LeftButton.containsPoint(x, y))
+            else if (this.LeftButton.containsPoint(x, y))
             {
                 if (CurrentIndex > 0)
                 {
@@ -191,7 +191,7 @@ namespace BetterFarmComputer
                     }
                     break;
                 case Buttons.DPadRight:
-                    if (CurrentIndex < IndexCount-1)
+                    if (CurrentIndex < IndexCount - 1)
                     {
                         CurrentIndex++;
                     }
@@ -223,6 +223,15 @@ namespace BetterFarmComputer
         {
             //base.draw(b);
             //MyLog.Log("invoke draw", StardewModdingAPI.LogLevel.Debug);
+            string language = MyHelper.GetLanguage();
+            //MyLog.Log($"language:{MyHelper.GetLanguage()}", StardewModdingAPI.LogLevel.Debug);
+            SpriteFont font = smallFont;
+
+            float fontScale = 1f;
+            //if (language.Contains("zh"))
+            //{
+            //    fontScale = 1.0f;
+            //}
 
             int x = this.xPositionOnScreen;
             int y = this.yPositionOnScreen;
@@ -265,12 +274,12 @@ namespace BetterFarmComputer
                         {
                             foreach (var str in contentStrs)
                             {
-                                contentBatch.DrawString(font, str, new Vector2(x + leftOffset, y + topOffset), Color.Black);
+                                contentBatch.DrawString(font, str, new Vector2(x + leftOffset, y + topOffset), Color.Black, 0, new Vector2(0, 0), fontScale, SpriteEffects.None, 0);
                                 y += gutter;
                             }
                             maxYDelta = Math.Max(maxYDelta, y - yPositionOnScreen);
                             if (CurrentIndex == 0)
-                                x += 250;
+                                x += 370;
                             else if (CurrentIndex == 1)
                                 x += 500;
                             y = yPositionOnScreen;
