@@ -197,7 +197,7 @@ namespace ShowRealTime
                     device.ScissorRectangle = prevScissorRectangle;
                 }
             }
-            this.drawMouse(Game1.spriteBatch);
+            //this.drawMouse(Game1.spriteBatch);
         }
 
         public void DrawText(string text, int x, int y)
