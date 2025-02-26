@@ -21,5 +21,12 @@ namespace BetterFarmComputer
                 return "ModHelper is null!";
             return ModHelper.Translation.Get(key).Default("缺失翻译！");
         }
+
+        public static string GetLanguage()
+        {
+            if (ModHelper == null)
+                return "ModHelper is null!";
+            return ModHelper.Translation.Locale;
+        }
     }
 }

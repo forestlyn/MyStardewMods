@@ -185,7 +185,7 @@ namespace BetterFarmComputer
             );
         }
 
-        
+
         //private void OnDisplayMenuChanged(object? sender, MenuChangedEventArgs e)
         //{
         //    if (e.NewMenu != null)
@@ -213,8 +213,11 @@ namespace BetterFarmComputer
             }
         }
 
+
+
         private List<List<string>> GetFarmAnalyseStringLists()
         {
+            bool hasGreenHouse = false;
             var strs = new List<List<string>>();
 
             if (Config != null && !Config.ShowFarm)
@@ -238,13 +241,13 @@ namespace BetterFarmComputer
             strs.Add(farmlist);
 
         OtherPlaceFarm:
-            if(Config != null && !Config.ShowOtherPlaceFarm)
+            if (Config != null && !Config.ShowOtherPlaceFarm)
                 goto GreenHouse;
-            Analyse.AnalyseOtherFarmTerrainFeatureList(out int hoeDirtCount_other,out int cropCount_other, 
-                out int readyForHarvestCount_other,out int needsWateringCount_other,out var _,out var _);
+            Analyse.AnalyseOtherFarmTerrainFeatureList(out int hoeDirtCount_other, out int cropCount_other,
+                out int readyForHarvestCount_other, out int needsWateringCount_other, out var _, out var _);
             var otherPlaceFarmList = new List<string>
             {
-          
+
                 $"{Game1.player.Name} {MyHelper.GetTranslation("otherPlaceFarmReport")}:",
                 $"--------------",
                 $"{MyHelper.GetTranslation("cropCount")}:{cropCount_other}",
@@ -274,6 +277,7 @@ namespace BetterFarmComputer
                 $"{MyHelper.GetTranslation("hoeDirtCount")}:{hoeDirtCount_GreenHouse - cropCount_GreenHouse}"
             };
             strs.Add(greenhouseList);
+            hasGreenHouse = true;
 
         IslandWest:
             if (Config != null && !Config.ShowIslandWest)
@@ -289,9 +293,17 @@ namespace BetterFarmComputer
                 $"{MyHelper.GetTranslation("needsWateringCount")}:{needsWateringCount_IslandWest}",
                 $"{MyHelper.GetTranslation("hoeDirtCount")}:{hoeDirtCount_IslandWest - cropCount_IslandWest}"
             };
-            strs.Add(islandWestList);
+            if (hasGreenHouse)
+            {
+                int idx = strs.Count() - 1;
+                strs[idx].Add("");
+                foreach (var str in islandWestList)
+                    strs[idx].Add(str);
+            }
+            else
+                strs.Add(islandWestList);
 
-        Other:
+            Other:
             if (Config != null && !Config.ShowOther)
                 goto End;
             //ALL
@@ -382,7 +394,7 @@ namespace BetterFarmComputer
                 allList.Add($"{MyHelper.GetTranslation("fruitTreeCount")}:{fruitTreeCount}");
                 allList.Add($"{MyHelper.GetTranslation("canHarvestFruitTree")}:{canHarvestFruitTree}");
             }
-            if(Config==null|| Config.ShowFishSmoker)
+            if (Config == null || Config.ShowFishSmoker)
             {
                 var fishSmoker = objsStruct_ALL.GetType(ObjectStructType.FishSmoker) +
                     buildingStruct_ALL.analyseObjectStruct.GetType(ObjectStructType.FishSmoker);
